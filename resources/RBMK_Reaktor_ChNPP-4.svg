@@ -1,0 +1,514 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="2410" height="2410" style="font-family:'Arial';text-anchor:middle;font-size:29px">
+<defs>
+	<rect id="canal" width="50" height="50" style="stroke:black;stroke-width:1px"/>
+	<use id="y" xlink:href="#canal" fill="#FED800"/>
+	<use id="r" xlink:href="#canal" fill="#DE1700"/>
+	<use id="b" xlink:href="#canal" fill="#0067CE"/>
+	<use id="g" xlink:href="#canal" fill="#00B150"/>
+	<g id="e">
+		<rect width="50" height="50" style="fill:#033000;fill-opacity:0.3569;stroke:black;stroke-width:1px"/>
+		<circle cx="25" cy="25" r="3.5" fill="#000"/>
+	</g>
+	<g id="e2">
+		<use xlink:href="#e"/>
+		<use xlink:href="#e" x="50"/>
+	</g>
+	<g id="e3">
+		<use xlink:href="#e2" x="50"/>
+		<use xlink:href="#e"/>
+	</g>
+	<g id="g0">
+		<use xlink:href="#g"/>
+		<text x="25" y="25" dy="10">0</text>
+	</g>
+	<g id="e3g0">
+		<use xlink:href="#e3"/>
+		<use xlink:href="#g0" x="150"/>
+	</g>
+	<g id="y0">
+		<use xlink:href="#y"/>
+		<text x="25" y="25" dy="10">0</text>
+	</g>
+</defs>
+<g id="line1">
+	<use xlink:href="#e3" x="854.5" y="4.5"/>
+	<use xlink:href="#e3" x="1004.5" y="4.5"/>
+	<use xlink:href="#e3" x="1154.5" y="4.5"/>
+	<use xlink:href="#e3" x="1304.5" y="4.5"/>
+	<use xlink:href="#e2" x="1454.5" y="4.5"/>
+</g>
+<use xlink:href="#e3g0" x="704.5" y="54.5"/>
+<use xlink:href="#e3g0" x="904.5" y="54.5"/>
+<use xlink:href="#e3g0" x="1104.5" y="54.5"/>
+<use xlink:href="#e3g0" x="1304.5" y="54.5"/>
+<use xlink:href="#e2" x="1504.5" y="54.5"/>
+<use xlink:href="#e2" x="1604.5" y="54.5"/>
+<g id="line3">
+	<use xlink:href="#e2" x="604.5" y="104.5"/>
+	<use xlink:href="#line47" y="-2200"/>
+	<use xlink:href="#e2" x="1704.5" y="104.5"/>
+</g>
+<use xlink:href="#e" x="504.5" y="154.5"/>
+<use xlink:href="#y0" x="554.5" y="154.5"/>
+<use xlink:href="#e3g0" x="604.5" y="154.5"/>
+<use xlink:href="#e3" x="804.5" y="154.5"/>
+<use xlink:href="#y" x="954.5" y="154.5"/>
+	<text x="979.5" y="179.5" dy="10">86</text>
+<use xlink:href="#e3g0" x="1004.5" y="154.5"/>
+<use xlink:href="#e3" x="1204.5" y="154.5"/>
+<use xlink:href="#y" x="1354.5" y="154.5"/>
+	<text x="1379.5" y="179.5" dy="10">20</text>
+<use xlink:href="#e3g0" x="1404.5" y="154.5"/>
+<use xlink:href="#e3" x="1604.5" y="154.5"/>
+<use xlink:href="#y0" x="1754.5" y="154.5"/>
+<use xlink:href="#e2" x="1804.5" y="154.5"/>
+<g id="line5">
+	<use xlink:href="#e" x="454.5" y="204.5"/>
+	<use xlink:href="#line45" y="-2000"/>
+	<use xlink:href="#e" x="1904.5" y="204.5"/>
+</g>
+<use xlink:href="#e" x="404.5" y="254.5"/>
+<use xlink:href="#g0" x="454.5" y="254.5"/>
+<use xlink:href="#e3g0" x="504.5" y="254.5"/>
+<use xlink:href="#e3" x="704.5" y="254.5"/>
+<use xlink:href="#g" x="854.5" y="254.5"/>
+	<text x="879.5" y="279.5" dy="10">240</text>
+<use xlink:href="#e3g0" x="904.5" y="254.5"/>
+<use xlink:href="#e3g0" x="1104.5" y="254.5"/>
+<use xlink:href="#e3g0" x="1304.5" y="254.5"/>
+<use xlink:href="#e3g0" x="1504.5" y="254.5"/>
+<use xlink:href="#e3g0" x="1704.5" y="254.5"/>
+<use xlink:href="#e2" x="1904.5" y="254.5"/>
+<g id="line7">
+	<use xlink:href="#e" x="354.5" y="304.5"/>
+	<use xlink:href="#line43" y="-1800"/>
+	<use xlink:href="#e" x="2004.5" y="304.5"/>
+</g>
+<use xlink:href="#e" x="304.5" y="354.5"/>
+<use xlink:href="#g0" x="354.5" y="354.5"/>
+<use xlink:href="#e3g0" x="404.5" y="354.5"/>
+<use xlink:href="#e3" x="604.5" y="354.5"/>
+<use xlink:href="#b" x="754.5" y="354.5"/>
+<use xlink:href="#e3g0" x="804.5" y="354.5"/>
+<use xlink:href="#e3" x="1004.5" y="354.5"/>
+<use xlink:href="#g" x="1154.5" y="354.5"/>
+	<text x="1179.5" y="379.5" dy="10">110</text>
+<use xlink:href="#e3g0" x="1204.5" y="354.5"/>
+<use xlink:href="#e3" x="1404.5" y="354.5"/>
+<use xlink:href="#b" x="1554.5" y="354.5"/>
+<use xlink:href="#e3g0" x="1604.5" y="354.5"/>
+<use xlink:href="#e3g0" x="1804.5" y="354.5"/>
+<use xlink:href="#e2" x="2004.5" y="354.5"/>
+<g id="line9">
+	<use xlink:href="#e" x="254.5" y="404.5"/>
+	<use xlink:href="#line41" y="-1600"/>
+	<use xlink:href="#e" x="2104.5" y="404.5"/>
+</g>
+<use xlink:href="#e" x="204.5" y="454.5"/>
+<use xlink:href="#g0" x="254.5" y="454.5"/>
+<use xlink:href="#e3g0" x="304.5" y="454.5"/>
+<use xlink:href="#e3g0" x="504.5" y="454.5"/>
+<use xlink:href="#e3g0" x="704.5" y="454.5"/>
+<use xlink:href="#e3g0" x="904.5" y="454.5"/>
+<use xlink:href="#e3g0" x="1104.5" y="454.5"/>
+<use xlink:href="#e3g0" x="1304.5" y="454.5"/>
+<use xlink:href="#e3g0" x="1504.5" y="454.5"/>
+<use xlink:href="#e3g0" x="1704.5" y="454.5"/>
+<use xlink:href="#e3g0" x="1904.5" y="454.5"/>
+<use xlink:href="#e2" x="2104.5" y="454.5"/>
+<g id="line11">
+	<use xlink:href="#e" x="154.5" y="504.5"/>
+	<use xlink:href="#line39" y="-1400"/>
+	<use xlink:href="#e" x="2204.5" y="504.5"/>
+</g>
+<g id="y_line12">
+	<use xlink:href="#y0" x="154.5" y="554.5"/>
+	<use xlink:href="#y0" x="554.5" y="554.5"/>
+	<use xlink:href="#y0" x="954.5" y="554.5"/>
+	<use xlink:href="#y0" x="1354.5" y="554.5"/>
+</g>
+<use xlink:href="#e3g0" x="204.5" y="554.5"/>
+<use xlink:href="#e3" x="404.5" y="554.5"/>
+<use xlink:href="#e3" x="604.5" y="554.5"/>
+<use xlink:href="#g" x="754.5" y="554.5"/>
+	<text x="779.5" y="579.5" dy="10">30</text>
+<use xlink:href="#e3" x="804.5" y="554.5"/>
+<use xlink:href="#e3" x="1004.5" y="554.5"/>
+<use xlink:href="#r" x="1154.5" y="554.5"/>
+	<text x="1179.5" y="579.5" dy="10">140</text>
+<use xlink:href="#e3" x="1204.5" y="554.5"/>
+<use xlink:href="#e3g0" x="1404.5" y="554.5"/>
+<use xlink:href="#e3" x="1604.5" y="554.5"/>
+<use xlink:href="#y0" x="1754.5" y="554.5"/>
+<use xlink:href="#e3g0" x="1804.5" y="554.5"/>
+<use xlink:href="#e3" x="2004.5" y="554.5"/>
+<use xlink:href="#y0" x="2154.5" y="554.5"/>
+<use xlink:href="#e" x="2204.5" y="554.5"/>
+<g id="line13">
+	<use xlink:href="#e" x="104.5" y="604.5"/>
+	<use xlink:href="#line11" y="100"/>
+	<use xlink:href="#e" x="2254.5" y="604.5"/>
+</g>
+<use xlink:href="#e3g0" x="104.5" y="654.5"/>
+<use xlink:href="#e3g0" x="304.5" y="654.5"/>
+<use xlink:href="#e3g0" x="504.5" y="654.5"/>
+<use xlink:href="#e3g0" x="704.5" y="654.5"/>
+<use xlink:href="#e3g0" x="904.5" y="654.5"/>
+<use xlink:href="#e3g0" x="1104.5" y="654.5"/>
+<use xlink:href="#e3" x="1304.5" y="654.5"/>
+<use xlink:href="#g" x="1454.5" y="654.5"/>
+	<text x="1479.5" y="679.5" dy="10">120</text>
+<use xlink:href="#e3g0" x="1504.5" y="654.5"/>
+<use xlink:href="#e3g0" x="1704.5" y="654.5"/>
+<use xlink:href="#e3g0" x="1904.5" y="654.5"/>
+<use xlink:href="#e2" x="2104.5" y="654.5"/>
+<use xlink:href="#e2" x="2204.5" y="654.5"/>
+<g id="line15">
+	<use xlink:href="#e" x="54.5" y="704.5"/>
+	<use xlink:href="#line13" y="100"/>
+	<use xlink:href="#e" x="2304.5" y="704.5"/>
+</g>
+<g id="egbr_line16">
+	<use xlink:href="#e2" x="54.5" y="754.5"/>
+	<use xlink:href="#g0" x="154.5" y="754.5"/>
+	<use xlink:href="#e3" x="204.5" y="754.5"/>
+	<use xlink:href="#b" x="354.5" y="754.5"/>
+	<use xlink:href="#e3" x="404.5" y="754.5"/>
+	<use xlink:href="#e3" x="604.5" y="754.5"/>
+	<use xlink:href="#r" x="754.5" y="754.5"/>
+		<text x="779.5" y="779.5" dy="10">160</text>
+	<use xlink:href="#e3" x="804.5" y="754.5"/>
+	<use xlink:href="#g0" x="954.5" y="754.5"/>
+	<use xlink:href="#e3" x="1004.5" y="754.5"/>
+	<use xlink:href="#b" x="1154.5" y="754.5"/>
+	<use xlink:href="#e3" x="1204.5" y="754.5"/>
+	<use xlink:href="#g0" x="1354.5" y="754.5"/>
+	<use xlink:href="#e3" x="1404.5" y="754.5"/>
+	<use xlink:href="#r" x="1554.5" y="754.5"/>
+		<text x="1579.5" y="779.5" dy="10">160</text>
+	<use xlink:href="#e3" x="1604.5" y="754.5"/>
+	<use xlink:href="#e3" x="1804.5" y="754.5"/>
+	<use xlink:href="#b" x="1954.5" y="754.5"/>
+	<use xlink:href="#e3" x="2004.5" y="754.5"/>
+	<use xlink:href="#g0" x="2154.5" y="754.5"/>
+	<use xlink:href="#e3" x="2204.5" y="754.5"/>
+</g>
+<use xlink:href="#g" x="554.5" y="754.5"/>
+	<text x="579.5" y="779.5" dy="10">70</text>
+<use xlink:href="#g" x="1754.5" y="754.5"/>
+	<text x="1779.5" y="779.5" dy="10">30</text>
+<use xlink:href="#line15" y="100"/>
+<use xlink:href="#g0" x="54.5" y="854.5"/>
+<use xlink:href="#g0" x="254.5" y="854.5"/>
+<use xlink:href="#g" x="454.5" y="854.5"/>
+	<text x="479.5" y="879.5" dy="10">120</text>
+<use xlink:href="#g0" x="854.5" y="854.5"/>
+<use xlink:href="#g" x="1054.5" y="854.5"/>
+	<text x="1079.5" y="879.5" dy="10">100</text>
+<use xlink:href="#g0" x="1254.5" y="854.5"/>
+<use xlink:href="#g" x="1454.5" y="854.5"/>
+	<text x="1479.5" y="879.5" dy="10">30</text>
+<use xlink:href="#g0" x="1654.5" y="854.5"/>
+<use xlink:href="#g" x="1854.5" y="854.5"/>
+	<text x="1879.5" y="879.5" dy="10">20</text>
+<use xlink:href="#g" x="2054.5" y="854.5"/>
+	<text x="2079.5" y="879.5" dy="10">140</text>
+<use xlink:href="#g0" x="2254.5" y="854.5"/>
+<g id="eg_line18">
+	<use xlink:href="#e" x="4.5" y="854.5"/>
+	<use xlink:href="#e3" x="104.5" y="854.5"/>
+	<use xlink:href="#e3" x="304.5" y="854.5"/>
+	<use xlink:href="#e3" x="504.5" y="854.5"/>
+	<use xlink:href="#g0" x="654.5" y="854.5"/>
+	<use xlink:href="#e3" x="704.5" y="854.5"/>
+	<use xlink:href="#e3" x="904.5" y="854.5"/>
+	<use xlink:href="#e3" x="1104.5" y="854.5"/>
+	<use xlink:href="#e3" x="1304.5" y="854.5"/>
+	<use xlink:href="#e3" x="1504.5" y="854.5"/>
+	<use xlink:href="#e3" x="1704.5" y="854.5"/>
+	<use xlink:href="#e3" x="1904.5" y="854.5"/>
+	<use xlink:href="#e3" x="2104.5" y="854.5"/>
+	<use xlink:href="#e2" x="2304.5" y="854.5"/>
+</g>
+<g id="line19">
+	<use xlink:href="#e" x="4.5" y="904.5"/>
+	<use xlink:href="#line15" y="200"/>
+	<use xlink:href="#e" x="2354.5" y="904.5"/>
+</g>
+<g id="e_line20">
+	<use xlink:href="#e3" x="4.5" y="954.5"/>
+	<use xlink:href="#e3" x="204.5" y="954.5"/>
+	<use xlink:href="#e3" x="404.5" y="954.5"/>
+	<use xlink:href="#e3" x="604.5" y="954.5"/>
+	<use xlink:href="#e3" x="804.5" y="954.5"/>
+	<use xlink:href="#e3" x="1004.5" y="954.5"/>
+	<use xlink:href="#e3" x="1204.5" y="954.5"/>
+	<use xlink:href="#e3" x="1404.5" y="954.5"/>
+	<use xlink:href="#e3" x="1604.5" y="954.5"/>
+	<use xlink:href="#e3" x="1804.5" y="954.5"/>
+	<use xlink:href="#e3" x="2004.5" y="954.5"/>
+	<use xlink:href="#e2" x="2204.5" y="954.5"/>
+	<use xlink:href="#e2" x="2304.5" y="954.5"/>
+</g>
+<use xlink:href="#y_line12" y="400"/>
+<use xlink:href="#g0" x="354.5" y="954.5"/>
+<use xlink:href="#g0" x="754.5" y="954.5"/>
+<use xlink:href="#r" x="1154.5" y="954.5"/>
+	<text x="1179.5" y="979.5" dy="10">20</text>
+<use xlink:href="#g" x="1554.5" y="954.5"/>
+	<text x="1579.5" y="979.5" dy="10">80</text>
+<use xlink:href="#y" x="1754.5" y="954.5"/>
+	<text x="1779.5" y="979.5" dy="10">120</text>
+<use xlink:href="#g0" x="1954.5" y="954.5"/>
+<use xlink:href="#y" x="2154.5" y="954.5"/>
+	<text x="2179.5" y="979.5" dy="10">190</text>
+<use xlink:href="#line19" y="100"/>
+<use xlink:href="#eg_line18" y="200"/>
+<use xlink:href="#g0" x="54.5" y="1054.5"/>
+<use xlink:href="#g0" x="254.5" y="1054.5"/>
+<use xlink:href="#g0" x="454.5" y="1054.5"/>
+<use xlink:href="#g" x="854.5" y="1054.5"/>
+	<text x="879.5" y="1079.5" dy="10">20</text>
+<use xlink:href="#g0" x="1054.5" y="1054.5"/>
+<use xlink:href="#g0" x="1254.5" y="1054.5"/>
+<use xlink:href="#g0" x="1454.5" y="1054.5"/>
+<use xlink:href="#g" x="1654.5" y="1054.5"/>
+	<text x="1679.5" y="1079.5" dy="10">140</text>
+<use xlink:href="#g0" x="1854.5" y="1054.5"/>
+<use xlink:href="#g0" x="2054.5" y="1054.5"/>
+<use xlink:href="#g" x="2254.5" y="1054.5"/>
+	<text x="2279.5" y="1079.5" dy="10">180</text>
+<use xlink:href="#line19" y="200"/>
+<use xlink:href="#e_line20" y="200"/>
+<use xlink:href="#g0" x="154.5" y="1154.5"/>
+<use xlink:href="#g0" x="354.5" y="1154.5"/>
+<use xlink:href="#r" x="554.5" y="1154.5"/>
+	<text x="579.5" y="1179.5" dy="10">140</text>
+<use xlink:href="#b" x="754.5" y="1154.5"/>
+<use xlink:href="#r" x="954.5" y="1154.5"/>
+	<text x="979.5" y="1179.5" dy="10">20</text>
+<use xlink:href="#g0" x="1154.5" y="1154.5"/>
+<use xlink:href="#r" x="1354.5" y="1154.5"/>
+	<text x="1379.5" y="1179.5" dy="10">20</text>
+<use xlink:href="#b" x="1554.5" y="1154.5"/>
+<use xlink:href="#r" x="1754.5" y="1154.5"/>
+	<text x="1779.5" y="1179.5" dy="10">140</text>
+<use xlink:href="#g0" x="1954.5" y="1154.5"/>
+<use xlink:href="#g0" x="2154.5" y="1154.5"/>
+<use xlink:href="#line19" y="300"/>
+<use xlink:href="#eg_line18" y="400"/>
+<use xlink:href="#g0" x="54.5" y="1254.5"/>
+<use xlink:href="#g0" x="254.5" y="1254.5"/>
+<use xlink:href="#g0" x="454.5" y="1254.5"/>
+<use xlink:href="#g0" x="854.5" y="1254.5"/>
+<use xlink:href="#g0" x="1054.5" y="1254.5"/>
+<use xlink:href="#g" x="1254.5" y="1254.5"/>
+	<text x="1279.5" y="1279.5" dy="10">90</text>
+<use xlink:href="#g0" x="1454.5" y="1254.5"/>
+<use xlink:href="#g0" x="1654.5" y="1254.5"/>
+<use xlink:href="#g0" x="1854.5" y="1254.5"/>
+<use xlink:href="#g0" x="2054.5" y="1254.5"/>
+<use xlink:href="#g0" x="2254.5" y="1254.5"/>
+<use xlink:href="#e_line20" y="400"/>
+<use xlink:href="#line19" y="400"/>
+<use xlink:href="#y" x="154.5" y="1354.5"/>
+	<text x="179.5" y="1379.5" dy="10">180</text>
+<use xlink:href="#g0" x="354.5" y="1354.5"/>
+<use xlink:href="#y0" x="554.5" y="1354.5"/>
+<use xlink:href="#g0" x="754.5" y="1354.5"/>
+<use xlink:href="#y0" x="954.5" y="1354.5"/>
+<use xlink:href="#r" x="1154.5" y="1354.5"/>
+	<text x="1179.5" y="1379.5" dy="10">20</text>
+<use xlink:href="#y" x="1354.5" y="1354.5"/>
+	<text x="1379.5" y="1379.5" dy="10">20</text>
+<use xlink:href="#g0" x="1554.5" y="1354.5"/>
+<use xlink:href="#y" x="1754.5" y="1354.5"/>
+	<text x="1779.5" y="1379.5" dy="10">100</text>
+<use xlink:href="#g" x="1954.5" y="1354.5"/>
+	<text x="1979.5" y="1379.5" dy="10">170</text>
+<use xlink:href="#y0" x="2154.5" y="1354.5"/>
+<use xlink:href="#line19" y="500"/>
+<use xlink:href="#eg_line18" y="600"/>
+<use xlink:href="#g" x="54.5" y="1454.5"/>
+	<text x="79.5" y="1479.5" dy="10">20</text>
+<use xlink:href="#g" x="254.5" y="1454.5"/>
+	<text x="279.5" y="1479.5" dy="10">120</text>
+<use xlink:href="#g0" x="454.5" y="1454.5"/>
+<use xlink:href="#g" x="854.5" y="1454.5"/>
+	<text x="879.5" y="1479.5" dy="10">20</text>
+<use xlink:href="#g" x="1054.5" y="1454.5"/>
+	<text x="1079.5" y="1479.5" dy="10">260</text>
+<use xlink:href="#g0" x="1254.5" y="1454.5"/>
+<use xlink:href="#g0" x="1454.5" y="1454.5"/>
+<use xlink:href="#g" x="1654.5" y="1454.5"/>
+	<text x="1679.5" y="1479.5" dy="10">40</text>
+<use xlink:href="#g0" x="1854.5" y="1454.5"/>
+<use xlink:href="#g" x="2054.5" y="1454.5"/>
+	<text x="2079.5" y="1479.5" dy="10">20</text>
+<use xlink:href="#g0" x="2254.5" y="1454.5"/>
+<use xlink:href="#line19" y="600"/>
+<use xlink:href="#egbr_line16" y="800"/>
+<use xlink:href="#g0" x="554.5" y="1554.5"/>
+<use xlink:href="#g0" x="1754.5" y="1554.5"/>
+<use xlink:href="#line15" y="900"/>
+<use xlink:href="#e2" x="54.5" y="1654.5"/>
+<use xlink:href="#e2" x="154.5" y="1654.5"/>
+<use xlink:href="#g0" x="254.5" y="1654.5"/>
+<use xlink:href="#e3" x="304.5" y="1654.5"/>
+<use xlink:href="#g0" x="454.5" y="1654.5"/>
+<use xlink:href="#e3" x="504.5" y="1654.5"/>
+<use xlink:href="#g0" x="654.5" y="1654.5"/>
+<use xlink:href="#e3" x="704.5" y="1654.5"/>
+<use xlink:href="#g0" x="854.5" y="1654.5"/>
+<use xlink:href="#e3" x="904.5" y="1654.5"/>
+<use xlink:href="#g0" x="1054.5" y="1654.5"/>
+<use xlink:href="#e3" x="1104.5" y="1654.5"/>
+<use xlink:href="#g0" x="1254.5" y="1654.5"/>
+<use xlink:href="#e3" x="1304.5" y="1654.5"/>
+<use xlink:href="#g0" x="1454.5" y="1654.5"/>
+<use xlink:href="#e3" x="1504.5" y="1654.5"/>
+<use xlink:href="#g0" x="1654.5" y="1654.5"/>
+<use xlink:href="#e3" x="1704.5" y="1654.5"/>
+<use xlink:href="#g" x="1854.5" y="1654.5"/>
+	<text x="1879.5" y="1679.5" dy="10">30</text>
+<use xlink:href="#e3" x="1904.5" y="1654.5"/>
+<use xlink:href="#g0" x="2054.5" y="1654.5"/>
+<use xlink:href="#e3" x="2104.5" y="1654.5"/>
+<use xlink:href="#g0" x="2254.5" y="1654.5"/>
+<use xlink:href="#e" x="2304.5" y="1654.5"/>
+<use xlink:href="#line13" y="1100"/>
+<use xlink:href="#y_line12" y="1200"/>
+<use xlink:href="#e" x="104.5" y="1754.5"/>
+<use xlink:href="#e3" x="204.5" y="1754.5"/>
+<use xlink:href="#g" x="354.5" y="1754.5"/>
+	<text x="379.5" y="1779.5" dy="10">20</text>
+<use xlink:href="#e3" x="404.5" y="1754.5"/>
+<use xlink:href="#e3" x="604.5" y="1754.5"/>
+<use xlink:href="#g0" x="754.5" y="1754.5"/>
+<use xlink:href="#e3" x="804.5" y="1754.5"/>
+<use xlink:href="#e3" x="1004.5" y="1754.5"/>
+<use xlink:href="#r" x="1154.5" y="1754.5"/>
+	<text x="1179.5" y="1779.5" dy="10">140</text>
+<use xlink:href="#e3" x="1204.5" y="1754.5"/>
+<use xlink:href="#e3" x="1404.5" y="1754.5"/>
+<use xlink:href="#g0" x="1554.5" y="1754.5"/>
+<use xlink:href="#e3" x="1604.5" y="1754.5"/>
+<use xlink:href="#y0" x="1754.5" y="1754.5"/>
+<use xlink:href="#e3" x="1804.5" y="1754.5"/>
+<use xlink:href="#g0" x="1954.5" y="1754.5"/>
+<use xlink:href="#e3" x="2004.5" y="1754.5"/>
+<use xlink:href="#y0" x="2154.5" y="1754.5"/>
+<use xlink:href="#e2" x="2204.5" y="1754.5"/>
+<use xlink:href="#line11" y="1300"/>
+<use xlink:href="#e2" x="154.5" y="1854.5"/>
+<use xlink:href="#g0" x="254.5" y="1854.5"/>
+<use xlink:href="#e3" x="304.5" y="1854.5"/>
+<use xlink:href="#g0" x="454.5" y="1854.5"/>
+<use xlink:href="#e3" x="504.5" y="1854.5"/>
+<use xlink:href="#g0" x="654.5" y="1854.5"/>
+<use xlink:href="#e3" x="704.5" y="1854.5"/>
+<use xlink:href="#g0" x="854.5" y="1854.5"/>
+<use xlink:href="#e3" x="904.5" y="1854.5"/>
+<use xlink:href="#g0" x="1054.5" y="1854.5"/>
+<use xlink:href="#e3" x="1104.5" y="1854.5"/>
+<use xlink:href="#g0" x="1254.5" y="1854.5"/>
+<use xlink:href="#e3" x="1304.5" y="1854.5"/>
+<use xlink:href="#g0" x="1454.5" y="1854.5"/>
+<use xlink:href="#e3" x="1504.5" y="1854.5"/>
+<use xlink:href="#g" x="1654.5" y="1854.5"/>
+	<text x="1679.5" y="1879.5" dy="10">80</text>
+<use xlink:href="#e3" x="1704.5" y="1854.5"/>
+<use xlink:href="#g0" x="1854.5" y="1854.5"/>
+<use xlink:href="#e3" x="1904.5" y="1854.5"/>
+<use xlink:href="#g0" x="2054.5" y="1854.5"/>
+<use xlink:href="#e3" x="2104.5" y="1854.5"/>
+<g id="line39">
+	<use xlink:href="#e" x="204.5" y="1904.5"/>
+	<use xlink:href="#line9" y="1500"/>
+	<use xlink:href="#e" x="2154.5" y="1904.5"/>
+</g>
+<use xlink:href="#e2" x="254.5" y="1954.5"/>
+<use xlink:href="#g0" x="354.5" y="1954.5"/>
+<use xlink:href="#e3" x="404.5" y="1954.5"/>
+<use xlink:href="#g0" x="554.5" y="1954.5"/>
+<use xlink:href="#e3" x="604.5" y="1954.5"/>
+<use xlink:href="#b" x="754.5" y="1954.5"/>
+<use xlink:href="#e3" x="804.5" y="1954.5"/>
+<use xlink:href="#g0" x="954.5" y="1954.5"/>
+<use xlink:href="#e3" x="1004.5" y="1954.5"/>
+<use xlink:href="#g" x="1154.5" y="1954.5"/>
+	<text x="1179.5" y="1979.5" dy="10">20</text>
+<use xlink:href="#e3" x="1204.5" y="1954.5"/>
+<use xlink:href="#g0" x="1354.5" y="1954.5"/>
+<use xlink:href="#e3" x="1404.5" y="1954.5"/>
+<use xlink:href="#b" x="1554.5" y="1954.5"/>
+<use xlink:href="#e3" x="1604.5" y="1954.5"/>
+<use xlink:href="#g0" x="1754.5" y="1954.5"/>
+<use xlink:href="#e3" x="1804.5" y="1954.5"/>
+<use xlink:href="#g0" x="1954.5" y="1954.5"/>
+<use xlink:href="#e3" x="2004.5" y="1954.5"/>
+<g id="line41">
+	<use xlink:href="#e" x="304.5" y="2004.5"/>
+	<use xlink:href="#line7" y="1700"/>
+	<use xlink:href="#e" x="2054.5" y="2004.5"/>
+</g>
+<use xlink:href="#e2" x="354.5" y="2054.5"/>
+<use xlink:href="#g0" x="454.5" y="2054.5"/>
+<use xlink:href="#e3" x="504.5" y="2054.5"/>
+<use xlink:href="#g0" x="654.5" y="2054.5"/>
+<use xlink:href="#e3" x="704.5" y="2054.5"/>
+<use xlink:href="#g0" x="854.5" y="2054.5"/>
+<use xlink:href="#e3" x="904.5" y="2054.5"/>
+<use xlink:href="#g0" x="1054.5" y="2054.5"/>
+<use xlink:href="#e3" x="1104.5" y="2054.5"/>
+<use xlink:href="#g0" x="1254.5" y="2054.5"/>
+<use xlink:href="#e3" x="1304.5" y="2054.5"/>
+<use xlink:href="#g" x="1454.5" y="2054.5"/>
+	<text x="1479.5" y="2079.5" dy="10">30</text>
+<use xlink:href="#e3" x="1504.5" y="2054.5"/>
+<use xlink:href="#g0" x="1654.5" y="2054.5"/>
+<use xlink:href="#e3" x="1704.5" y="2054.5"/>
+<use xlink:href="#g0" x="1854.5" y="2054.5"/>
+<use xlink:href="#e3" x="1904.5" y="2054.5"/>
+<g id="line43">
+	<use xlink:href="#e" x="404.5" y="2104.5"/>
+	<use xlink:href="#line5" y="1900"/>
+	<use xlink:href="#e" x="1954.5" y="2104.5"/>
+</g>
+<use xlink:href="#y_line12" y="1600" x="400"/>
+<use xlink:href="#e2" x="454.5" y="2154.5"/>
+<use xlink:href="#e3" x="604.5" y="2154.5"/>
+<use xlink:href="#g0" x="754.5" y="2154.5"/>
+<use xlink:href="#e3" x="804.5" y="2154.5"/>
+<use xlink:href="#e3" x="1004.5" y="2154.5"/>
+<use xlink:href="#g0" x="1154.5" y="2154.5"/>
+<use xlink:href="#e3" x="1204.5" y="2154.5"/>
+<use xlink:href="#e3" x="1404.5" y="2154.5"/>
+<use xlink:href="#g0" x="1554.5" y="2154.5"/>
+<use xlink:href="#e3" x="1604.5" y="2154.5"/>
+<use xlink:href="#e3" x="1804.5" y="2154.5"/>
+<g id="line45">
+	<use xlink:href="#e2" x="504.5" y="2204.5"/>
+	<use xlink:href="#line3" y="2100"/>
+	<use xlink:href="#e2" x="1804.5" y="2204.5"/>
+</g>
+<use xlink:href="#e3" x="604.5" y="2254.5"/>
+<use xlink:href="#e2" x="754.5" y="2254.5"/>
+<use xlink:href="#g0" x="854.5" y="2254.5"/>
+<use xlink:href="#e3" x="904.5" y="2254.5"/>
+<use xlink:href="#g0" x="1054.5" y="2254.5"/>
+<use xlink:href="#e3" x="1104.5" y="2254.5"/>
+<use xlink:href="#g0" x="1254.5" y="2254.5"/>
+<use xlink:href="#e3" x="1304.5" y="2254.5"/>
+<use xlink:href="#g0" x="1454.5" y="2254.5"/>
+<use xlink:href="#e3" x="1504.5" y="2254.5"/>
+<use xlink:href="#g0" x="1654.5" y="2254.5"/>
+<use xlink:href="#e2" x="1704.5" y="2254.5"/>
+<g id="line47">
+	<use xlink:href="#e3" x="704.5" y="2304.5"/>
+	<use xlink:href="#line1" y="2300"/>
+	<use xlink:href="#e3" x="1554.5" y="2304.5"/>
+</g>
+<use xlink:href="#line1" y="2350"/>
+</svg>
