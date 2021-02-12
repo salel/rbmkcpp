@@ -8,7 +8,7 @@ DEPFLAGS=-MT $@ -MMD -MP -MF $(DEPSDIR)/$*.d
 FLAGS=-g -std=c++17 -Wall -pedantic
 LIBS=-lncurses
 
-SRC = main reactor
+SRC = main reactor gui_utils
 OBJPATH = $(patsubst %, $(OBJDIR)/%.o, $(PARSER) $(SRC))
 
 MAIN = main
