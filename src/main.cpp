@@ -100,15 +100,7 @@ int main() {
         wattrset(controls_win, A_NORMAL);
 
         // display view choices
-        int length = accumulate(views.begin(), views.end(), 2, [](auto a, auto b){return a+b->get_name().length()+2;});
-        wmove(controls_win, 3, (w-length)/2);
-        for (size_t i=0;i<views.size(); i++) {
-            if (selected_view == (int)i) wattrset(controls_win, A_STANDOUT);
-            else wattrset(controls_win, A_NORMAL);
-            wprintw(controls_win, views[i]->get_name().c_str());
-            wattrset(controls_win, A_NORMAL);
-            wprintw(controls_win, "   ");
-        }
+        selection<shared_ptr<View>>(controls_win, views, [](auto a) { return a->get_name();}, selected_view, 3, w);
 
         wrefresh(controls_win);
         this_thread::sleep_for(chrono::milliseconds(25));

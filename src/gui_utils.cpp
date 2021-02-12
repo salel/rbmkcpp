@@ -2,10 +2,6 @@
 
 using namespace std;
 
-void print_text_center(WINDOW* win, int line, int w, std::string txt) {
-	wmove(win, line, (w-txt.length())/2);
-    wprintw(win, txt.c_str());
-}
 
 void init_gui(gui_ctx &ctx) {
 
@@ -28,4 +24,9 @@ void init_gui(gui_ctx &ctx) {
     init_pair(2, COLOR_BLACK, COLOR_YELLOW);
     init_pair(3, COLOR_BLACK, COLOR_RED);
     init_pair(4, COLOR_BLACK, COLOR_CYAN);
+}
+
+void print_text_center(WINDOW* win, int line, int w, std::string txt) {
+	wmove(win, line, (w-txt.length())/2);
+    wprintw(win, txt.c_str());
 }
