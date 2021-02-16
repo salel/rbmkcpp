@@ -19,65 +19,60 @@ using namespace std;
 Reactor::Reactor() {
     // layouts
 
+    // 2-bit alignment
     // 0 = None, 1 = RRC, 2 = RR, 3 = FC_CPS
     const uint32_t layout[] = {
-        0x33333333,0x33333333,0x32220000,
-        0x33333333,0x33333333,0x22220000,
-        0x33333333,0x33333332,0x22210000,
-        0x33333333,0x33333322,0x22100000,
-        0x33333333,0x33332222,0x21000000,
-        0x33333333,0x33222222,0x10000000,
-        0x33333332,0x22222211,0,
-        0x22222222,0x22221100,0,
-        0x22222222,0x22110000,0,
-        0x22222111,0x11000000,0,
-        0x11111000,0,0,
+        0xFFFFFFFF,0xEA000000,
+        0xFFFFFFFF,0xAA000000,
+        0xFFFFFFFE,0xA9000000,
+        0xFFFFFFFA,0xA4000000,
+        0xFFFFFFAA,0x90000000,
+        0xFFFFFAAA,0x40000000,
+        0xFFFEAAA5,0,
+        0xAAAAAA50,0,
+        0xAAAAA500,0,
+        0xAA955000,0,
+        0x55400000,0,
     };
 
+    // 3-bit alignment
     // 0 = None, 1 = Manual, 2 = SAR, 3 = automatic, 4 = source
     const uint32_t cps_layout[] = {
-        0x00000000,0x10101010,0x00000000,
-        0x00000201,0x02010201,0x02000000,
-        0x00001010,0x10101010,0x10100000,
-        0x00010104,0x01010104,0x01010000,
-        0x00101010,0x10101010,0x10101000,
-        0x02010201,0x02030201,0x02010200,
-        0x00101010,0x10101010,0x10101000,
-        0x01040103,0x01040103,0x01040100,
-        0x10101010,0x10101010,0x10101010,
-        0x02010201,0x02030201,0x02010200,
-        0x10101010,0x10101010,0x10101010,
-        0x01010304,0x03010304,0x03010100,
-        0x10101010,0x10101010,0x10101010,
-        0x02010201,0x02030201,0x02010200,
-        0x10101010,0x10101010,0x10101010,
-        0x01040103,0x01040103,0x01040100,
-        0x00101010,0x10101010,0x10101010,
-        0x02010201,0x02030201,0x02010200,
-        0x00101010,0x10101010,0x10101000,
-        0x00010104,0x01010104,0x01010000,
-        0x00001010,0x10101010,0x10100000,
-        0x00000201,0x02010201,0x02000000,
-        0x00000000,0x10101010,0x10000000,
+        0112000000,
+        0111110000,
+        0214121000,
+        0111111100,
+        0312111210,
+        0111311110,
+        0214121412,
+        0131111111,
+        0112131211,
+        0131111111,
+        0214121412,
+        0111311110,
+        0312111210,
+        0111111100,
+        0214121000,
+        0111110000,
+        0112100000
     };
-
 
     // Generate graphite stack layout
     for (int i=0;i<reactor_width;i++) {
         for (int j=0;j<reactor_width;j++) {
             auto &c = columns[i][j];
             c = ColumnType::RR;
-            int i0 = floor(abs(i-reactor_width/2+0.5));
-            int j0 = floor(abs(j-reactor_width/2+0.5));
+            int i0 = floor(abs(i-reactor_width/2+0.5)); // 0-27
+            int j0 = floor(abs(j-reactor_width/2+0.5)); // 0-27
             if (i0<=16 && j0<=16) {
                 c = ColumnType::FC_CPS;
             } else if (i0>19 && j0>19) {
                 c = ColumnType::None;
             } else {
-                int i1 = min(i0,j0);
-                int j1 = max(i0,j0);
-                int cell = layout[(j1-17)*3+i1/8];
-                int val = (cell >> ((7-(i1%8))*4)) & 0xF;
+                int i1 = min(i0,j0); // 0-19
+                int j1 = max(i0,j0); // 17-27
+                int cell = layout[(j1-17)*2+i1/16];
+                int val = (cell >> ((15-(i1%16))*2)) & 0x3;
                 if (val == 1) c = ColumnType::RRC;
                 else if (val == 2) c = ColumnType::RR;
                 else if (val == 3) c = ColumnType::FC_CPS;
@@ -87,16 +82,19 @@ Reactor::Reactor() {
     }
 
     // Generate CPS layout, scram all control rods and withdraw sources
-    for (int i=0;i<23;i++) {
-        for (int j=0;j<23;j++) {
-            int cell = cps_layout[j*3+i/8];
-            int val = (cell >> ((7-(i%8))*4))&0xF;
-            int pos_x = i*2+5;
-            int pos_y = j*2+5;
-            if (val == 1) manual_rods.emplace_back(pos_x, pos_y, -absorber_length, 0, true);
-            else if (val == 2) short_rods.emplace_back(pos_x, pos_y, reactor_height-short_absorber_length, reactor_height, false);
-            else if (val == 3) automatic_rods.emplace_back(pos_x, pos_y, -absorber_length, 0, true);
-            else if (val == 4) source_rods.emplace_back(pos_x, pos_y, -absorber_length, 0, true, true);
+    for (int i=0;i<17;i++) {
+        for (int j=0;j<9;j++) {
+            int val = (cps_layout[i]>>(24-3*j))&07;
+            if (val > 0) {
+                int x[] = {11+i*2+j*2, 11+i*2-j*2};
+                int y[] = {11+i*2-j*2, 11+i*2+j*2};
+                for (int k=0;k<2;k++) {
+                    if (val == 1) manual_rods.emplace_back(x[k], y[k], -absorber_length, 0, true);
+                    else if (val == 2) short_rods.emplace_back(x[k], y[k], reactor_height-short_absorber_length, reactor_height, false);
+                    else if (val == 3) automatic_rods.emplace_back(x[k], y[k], -absorber_length, 0, true);
+                    else if (val == 4) source_rods.emplace_back(x[k], y[k], -absorber_length, 0, true, true);
+                }
+            }
         }
     }
 

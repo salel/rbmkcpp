@@ -12,6 +12,7 @@ public:
 	void input(int ch, Reactor &r) {
 		if (ch == 10) {
             endwin();
+            r.print_layout();
             exit(0);
         }
 	}

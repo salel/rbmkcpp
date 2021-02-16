@@ -110,5 +110,4 @@ int main() {
         delwin(main_win);
         delwin(controls_win);
     }
-    endwin();
 }
