@@ -127,12 +127,6 @@ int Reactor::indicated_pos(int i) {
 }
 
 void Reactor::print_layout() {
-    auto isrod = [](vector<Rod> &s, int x, int y){
-        for (unsigned i=0;i<s.size();i++) {
-            if (s[i].pos_x == x && s[i].pos_y == y) return true;
-        }
-        return false;
-    };
     int fc_cps_count = 0;
     int rr_count = 0;
     int rrc_count = 0;
@@ -171,4 +165,16 @@ void Reactor::print_layout() {
     cout << fc_cps_count << endl;
     cout << rr_count << endl;
     cout << rrc_count << endl;
+}
+
+bool Reactor::select_rod(int x, int y) {
+    if (isrod(manual_rods, x, y) || isrod(short_rods, x, y) || isrod(source_rods, x, y)) {
+        selected_rod_x = x;
+        selected_rod_y = y;
+        return true;
+    }
+    return false;
+}
+pair<int,int> Reactor::selected_rod() {
+    return make_pair(selected_rod_x, selected_rod_y);
 }

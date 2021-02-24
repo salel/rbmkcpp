@@ -53,6 +53,12 @@ private:
     }
 
 public:
+
+    bool select_rod(int x, int y);
+    std::pair<int,int> selected_rod();
+
+    int selected_rod_x = -1;
+    int selected_rod_y = -1;
     
     ColumnType columns[reactor_width][reactor_width];
     double neutron_flux[reactor_width][reactor_width][axial_sections];
