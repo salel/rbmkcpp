@@ -11,12 +11,32 @@ public:
         RRC // Reflector Coolant Channel
     };
 
+    enum class RodType {
+        Manual,
+        Short,
+        Automatic,
+        Source,
+        Fuel
+    };
+
     struct Rod {
-        Rod(int x, int y, float min_pos_z, float max_pos_z, bool direction, bool withdrawn=false): 
-            pos_x(x), pos_y(y), 
-            min_pos_z(min_pos_z), max_pos_z(max_pos_z),
-            direction(direction) {
-                pos_z = (!(direction^withdrawn))?max_pos_z:min_pos_z;
+        Rod(int x, int y, RodType type): 
+            pos_x(x), pos_y(y) {
+            this->type = type;
+            if (type == RodType::Manual || type == RodType::Source || type == RodType::Automatic) {
+                min_pos_z = -absorber_length;
+                max_pos_z = 0;
+                direction = true;
+            } else if (type == RodType::Short) {
+                min_pos_z = reactor_height-short_absorber_length;
+                max_pos_z = reactor_height;
+                direction = false;
+            } else if (type == RodType::Fuel) {
+                min_pos_z = 0;
+                max_pos_z = 0;
+                direction = true;
+            }
+            pos_z = direction?max_pos_z:min_pos_z;
         }
         int pos_x;
         int pos_y;
@@ -24,6 +44,7 @@ public:
         float min_pos_z;
         float max_pos_z;
         bool direction; // 0 for below, 1 for above
+        RodType type;
     };
 
 
@@ -45,29 +66,27 @@ private:
 
     int indicated_pos(int i);
 
-    bool isrod(std::vector<Rod> &s, int x, int y) {
-        for (unsigned i=0;i<s.size();i++) {
-            if (s[i].pos_x == x && s[i].pos_y == y) return true;
+    Rod* get_rod(int x, int y) {
+        for (unsigned i=0;i<rods.size();i++) {
+            if (rods[i].pos_x == x && rods[i].pos_y == y) return &rods[i];
         }
-        return false;
+        return nullptr;
     }
 
 public:
+    void step(float dt);
 
     bool select_rod(int x, int y);
-    std::pair<int,int> selected_rod();
+    Rod *get_selected_rod();
+    void move_rod(float dp);
 
-    int selected_rod_x = -1;
-    int selected_rod_y = -1;
+    Rod *selected_rod = nullptr;
+
+    float target_rod_depth = 0;
     
     ColumnType columns[reactor_width][reactor_width];
     double neutron_flux[reactor_width][reactor_width][axial_sections];
-    std::vector<Rod> manual_rods;
-    std::vector<Rod> automatic_rods;
-    std::vector<Rod> short_rods;
-    std::vector<Rod> source_rods;
-    std::vector<Rod> fuel_rods;
+    std::vector<Rod> rods;
 
     Reactor();
-    void print_layout();
 };

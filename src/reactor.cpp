@@ -80,6 +80,7 @@ Reactor::Reactor() {
             }
         }
     }
+    map<int, RodType> rod_decode = {{1, RodType::Manual}, {2, RodType::Short}, {3, RodType::Automatic}, {4, RodType::Source}};
 
     // Generate CPS layout, scram all control rods and withdraw sources
     for (int i=0;i<17;i++) {
@@ -88,11 +89,8 @@ Reactor::Reactor() {
             if (val > 0) {
                 int x[] = {11+i*2+j*2, 11+i*2-j*2};
                 int y[] = {11+i*2-j*2, 11+i*2+j*2};
-                for (int k=0;k<2;k++) {
-                    if (val == 1) manual_rods.emplace_back(x[k], y[k], -absorber_length, 0, true);
-                    else if (val == 2) short_rods.emplace_back(x[k], y[k], reactor_height-short_absorber_length, reactor_height, false);
-                    else if (val == 3) automatic_rods.emplace_back(x[k], y[k], -absorber_length, 0, true);
-                    else if (val == 4) source_rods.emplace_back(x[k], y[k], -absorber_length, 0, true, true);
+                for (int k=0;k<((j==0)?1:2);k++) {
+                    rods.emplace_back(x[k],y[k], rod_decode[val]);
                 }
             }
         }
@@ -102,11 +100,8 @@ Reactor::Reactor() {
     for (int i=4;i<52;i++) {
         for (int j=4;j<52;j++) {
             if (columns[i][j] == ColumnType::FC_CPS) {
-                if (!isrod(manual_rods, i, j) && 
-                    !isrod(automatic_rods, i,j) && 
-                    !isrod(short_rods, i,j) && 
-                    !isrod(source_rods, i,j)) {
-                    fuel_rods.emplace_back(i,j, -3*reactor_height, 0, true, true);
+                if (!get_rod(i,j)) {
+                    rods.emplace_back(i,j, RodType::Fuel);
                 }
             }
         }
@@ -126,55 +121,30 @@ int Reactor::indicated_pos(int i) {
     return (i < 4) ? i+51 : ((i>=reactor_width-4)?i+3:i-3);
 }
 
-void Reactor::print_layout() {
-    int fc_cps_count = 0;
-    int rr_count = 0;
-    int rrc_count = 0;
-    for (int i=0;i<reactor_width;i++) {
-        int ii = indicated_pos(i);
-        cout << string(1,((ii/10)+'0')) + (char)('0'+(ii%10));
-        for (int j=0;j<reactor_width;j++) {
-            auto &c = columns[i][j];
-            if (c == ColumnType::FC_CPS) {
-                if (isrod(manual_rods, i,j)) cout << "\033[42m  ";
-                else if (isrod(short_rods, i,j)) cout << "\033[43m  ";
-                else if (isrod(automatic_rods, i,j)) cout << "\033[41m  ";
-                else if (isrod(source_rods, i,j)) cout << "\033[44m  ";
-                else {
-                    fc_cps_count++;
-                    cout << "\033[47m  ";
-                }
-            } else if (c == ColumnType::RR) {
-                rr_count++;
-                cout << "\033[45m  ";
-            } else if (c == ColumnType::RRC) {
-                rrc_count++;
-                cout << "\033[46m  ";
-            } else {
-                cout << "\033[40m  ";
-            }
-        }
-        cout << "\033[40m" << endl;
-    }
-    cout << "  ";
-    for (int i=0;i<reactor_width;i++) {
-        int ii = indicated_pos(i);
-        cout << string(1,((ii/10)+'0')) + (char)('0'+(ii%10));
-    }
-    cout << endl;
-    cout << fc_cps_count << endl;
-    cout << rr_count << endl;
-    cout << rrc_count << endl;
-}
-
 bool Reactor::select_rod(int x, int y) {
-    if (isrod(manual_rods, x, y) || isrod(short_rods, x, y) || isrod(source_rods, x, y)) {
-        selected_rod_x = x;
-        selected_rod_y = y;
+    auto r = get_rod(x, y);
+    if (r && (r->type == RodType::Manual || r->type == RodType::Short)) {
+        selected_rod = r;
+        target_rod_depth = r->pos_z;
         return true;
     }
     return false;
 }
-pair<int,int> Reactor::selected_rod() {
-    return make_pair(selected_rod_x, selected_rod_y);
+Reactor::Rod *Reactor::get_selected_rod() {
+    return selected_rod;
+}
+
+void Reactor::move_rod(float dp) {
+    if (selected_rod) {
+        target_rod_depth = max(selected_rod->min_pos_z,min(selected_rod->pos_z+dp, selected_rod->max_pos_z));
+    }
+}
+
+void Reactor::step(float dt) {
+    if (selected_rod) {
+        if ((selected_rod->pos_z > target_rod_depth)^(!selected_rod->direction)) 
+            selected_rod->pos_z = max(target_rod_depth, selected_rod->pos_z - rod_insert_speed*dt);
+        else 
+            selected_rod->pos_z = min(target_rod_depth, selected_rod->pos_z + rod_insert_speed*dt);
+    }
 }

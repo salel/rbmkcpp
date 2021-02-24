@@ -19,7 +19,7 @@
 
 using namespace std;
 
-const static float dt = 0.1;
+const static float dt = 0.025;
 
 void window(int sx, int sy, int x, int y, string title, function<void(WINDOW*)> f) {
     WINDOW* win = newwin(sy, sx, y, x);
@@ -52,7 +52,6 @@ vector<string> split(string s, char del) {
 bool sendCommand(Reactor &r, string command) {
     if (command == "exit" || command == "quit") {
         endwin();
-        r.print_layout();
         exit(0);
     }
     auto com = split(command, ' ');
@@ -67,6 +66,30 @@ bool sendCommand(Reactor &r, string command) {
         ss2 >> y;
         if (!ss2) return false;
         return r.select_rod(x+3,y+3);
+    } else if (com[0] == "pull") {
+        if (com.size() == 1) {
+            r.move_rod(-10);
+            return true;
+        } else if (com.size() == 2) {
+            stringstream ss1(com[1]);
+            int dp;
+            ss1 >> dp;
+            if (!ss1) return false;
+            r.move_rod(-dp*0.01);
+            return true;
+        }
+    } else if (com[0] == "insert") {
+        if (com.size() == 1) {
+            r.move_rod(10);
+            return true;
+        } else if (com.size() == 2) {
+            stringstream ss1(com[1]);
+            int dp;
+            ss1 >> dp;
+            if (!ss1) return false;
+            r.move_rod(dp*0.01);
+            return true;
+        }
     }
 
     return false;
@@ -122,11 +145,7 @@ int main() {
 
         // overview
         window(56,16,0,0,"Overview", [&](WINDOW *win) {
-            mvwvline(win, 1, 19, 0, 14);
-            mvwvline(win, 1, 38, 0, 14);
-            mvwprintw(win, 2, 7, "REACTOR");
-            mvwprintw(win, 2, 23, "TURBOGEN");
-            mvwprintw(win, 2, 43, "MISC.");
+            
         });
 
         window(56,30,0,16,"Rod positions", [&](WINDOW *win) {
@@ -139,26 +158,25 @@ int main() {
                 mvwprintw(win, 28, i*2+5, format.c_str());
             }
 
-            auto print_rod = [&](auto &s) {
-                for (auto r : s) {
-                    int ii = (r.pos_z-r.min_pos_z)*100/(r.max_pos_z-r.min_pos_z);
-                    if (r.direction) ii = 100-ii;
+            map<Reactor::RodType, int> colors = {
+                {Reactor::RodType::Manual, 2},
+                {Reactor::RodType::Short, 3},
+                {Reactor::RodType::Automatic, 4},
+                {Reactor::RodType::Source, 5}
+            };
+
+            for (auto r : reactor.rods) {
+                if (r.type != Reactor::RodType::Fuel) {
+                    int ii = (r.pos_z-r.min_pos_z)*100.0/(r.max_pos_z-r.min_pos_z);
+                    if (!r.direction) ii = 100-ii;
                     string txt = (ii==100)?"**":string({(char)(ii/10+'0'),(char)(ii%10+'0')});
-                    auto sr = reactor.selected_rod();
-                    if (r.pos_y == sr.second && r.pos_x == sr.first && (clock&0x10)) wattron(win, A_STANDOUT);
+                    wattrset(win, COLOR_PAIR(colors[r.type]));
+                    auto sr = reactor.get_selected_rod();
+                    if (sr && r.pos_y == sr->pos_y && r.pos_x == sr->pos_x && (clock&0x10)) wattron(win, A_STANDOUT);
                     mvwprintw(win, 2+r.pos_y/2, r.pos_x, txt.c_str());
                     wattroff(win, A_STANDOUT);
                 }
-            };
-
-            wattrset(win, COLOR_PAIR(2));
-            print_rod(reactor.manual_rods);
-            wattrset(win, COLOR_PAIR(3));
-            print_rod(reactor.short_rods);
-            wattrset(win, COLOR_PAIR(4));
-            print_rod(reactor.automatic_rods);
-            wattrset(win, COLOR_PAIR(5));
-            print_rod(reactor.source_rods);
+            }
         });
 
         // warnings
@@ -173,7 +191,8 @@ int main() {
             wattrset(win, A_NORMAL);
         });
 
-        this_thread::sleep_for(chrono::milliseconds(25));
+        reactor.step(dt);
+        this_thread::sleep_for(chrono::milliseconds((int)(dt*1000)));
         clock++;
     }
 }
