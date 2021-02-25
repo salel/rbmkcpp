@@ -58,7 +58,8 @@ private:
     constexpr const static float short_absorber_length = 3.05;
     constexpr const static float tip_gap = 1.25;
     constexpr const static float tip_length = 4.5;
-    constexpr const static float rod_insert_speed = 0.4;
+    constexpr const static float rod_insert_speed = 0.1;
+    constexpr const static float rod_scram_speed = 0.4;
     constexpr const static float fuel_active_length = 6.862;
 
     constexpr const static int reactor_width = 56;
@@ -80,9 +81,12 @@ public:
     Rod *get_selected_rod();
     void move_rod(float dp);
 
-    Rod *selected_rod = nullptr;
+    void scram();
+    void scram_reset();
 
+    Rod *selected_rod = nullptr;
     float target_rod_depth = 0;
+    bool scrammed = false;
     
     ColumnType columns[reactor_width][reactor_width];
     double neutron_flux[reactor_width][reactor_width][axial_sections];

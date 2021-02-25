@@ -136,15 +136,29 @@ Reactor::Rod *Reactor::get_selected_rod() {
 
 void Reactor::move_rod(float dp) {
     if (selected_rod) {
-        target_rod_depth = max(selected_rod->min_pos_z,min(selected_rod->pos_z+dp, selected_rod->max_pos_z));
+        target_rod_depth = max(selected_rod->min_pos_z,min(selected_rod->pos_z+(selected_rod->direction?1:-1)*dp, selected_rod->max_pos_z));
     }
 }
 
 void Reactor::step(float dt) {
+    if (scrammed) {
+        target_rod_depth = 100;
+        for (auto& r : rods) {
+            r.pos_z = max(r.min_pos_z, min(r.pos_z + (r.direction?1:-1)*dt*rod_scram_speed, r.max_pos_z));
+        }
+    }
     if (selected_rod) {
-        if ((selected_rod->pos_z > target_rod_depth)^(!selected_rod->direction)) 
+        if ((selected_rod->pos_z > target_rod_depth)) 
             selected_rod->pos_z = max(target_rod_depth, selected_rod->pos_z - rod_insert_speed*dt);
         else 
             selected_rod->pos_z = min(target_rod_depth, selected_rod->pos_z + rod_insert_speed*dt);
     }
+}
+
+void Reactor::scram() {
+    scrammed = true;
+}
+
+void Reactor::scram_reset() {
+    scrammed = false;
 }

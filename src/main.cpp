@@ -56,7 +56,9 @@ bool sendCommand(Reactor &r, string command) {
     }
     auto com = split(command, ' ');
 
-    if (com[0] == "select" && com.size() == 3) {
+    string name = com[0];
+
+    if (name == "select" && com.size() == 3) {
         stringstream ss1(com[1]);
         int x;
         ss1 >> x;
@@ -66,30 +68,34 @@ bool sendCommand(Reactor &r, string command) {
         ss2 >> y;
         if (!ss2) return false;
         return r.select_rod(x+3,y+3);
-    } else if (com[0] == "pull") {
+    }
+    bool pull = name=="pull";
+    bool insert = name=="insert";
+    if (pull || insert) {
+        float dir = pull?-1:1;
         if (com.size() == 1) {
-            r.move_rod(-10);
+            r.move_rod(dir*100);
             return true;
         } else if (com.size() == 2) {
             stringstream ss1(com[1]);
             int dp;
             ss1 >> dp;
             if (!ss1) return false;
-            r.move_rod(-dp*0.01);
+            r.move_rod(dir*dp*0.01);
             return true;
-        }
-    } else if (com[0] == "insert") {
+        } else return false;
+    }
+    
+    if (name == "scram") {
         if (com.size() == 1) {
-            r.move_rod(10);
+            r.scram();
             return true;
         } else if (com.size() == 2) {
-            stringstream ss1(com[1]);
-            int dp;
-            ss1 >> dp;
-            if (!ss1) return false;
-            r.move_rod(dp*0.01);
-            return true;
-        }
+            if (com[1] == "reset") {
+                r.scram_reset();
+                return true;
+            } else return false;
+        } else return false;
     }
 
     return false;
