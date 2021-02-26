@@ -89,21 +89,19 @@ Reactor::Reactor() {
             if (val > 0) {
                 int x[] = {11+i*2+j*2, 11+i*2-j*2};
                 int y[] = {11+i*2-j*2, 11+i*2+j*2};
-                for (int k=0;k<((j==0)?1:2);k++) {
-                    rods.emplace_back(x[k],y[k], rod_decode[val]);
+                for (int k=0;k<2;k++) {
+                    rods[x[k]][y[k]] = Rod(rod_decode[val]);
                 }
             }
         }
     }
 
     // Generate Fuel layout, withdraw all outside the core
-    for (int i=4;i<52;i++) {
-        for (int j=4;j<52;j++) {
-            if (columns[i][j] == ColumnType::FC_CPS) {
-                if (!get_rod(i,j)) {
-                    rods.emplace_back(i,j, RodType::Fuel);
-                }
-            }
+    for (int i=4;i<reactor_width-4;i++) {
+        for (int j=4;j<reactor_width-4;j++) {
+            if (columns[i][j] == ColumnType::FC_CPS &&
+                rods[i][j].type == RodType::None)
+                    rods[i][j] = Rod(RodType::Fuel);
         }
     }
 
@@ -115,44 +113,168 @@ Reactor::Reactor() {
             }
         }
     }
-}
 
-int Reactor::indicated_pos(int i) {
-    return (i < 4) ? i+51 : ((i>=reactor_width-4)?i+3:i-3);
+    // Generate groups
+    groups.push_back({
+        {18,2},{22,2},{26,2},{30,2},{36,4},{38,6},{40,8},{42,10},{44,12},
+        {46,18},{46,22},{46,26},{46,30},{46,34},{44,36},{42,38},{40,40},{38,42},{36,44},
+        {34,46},{30,46},{26,46},{22,46},{18,46},{12,44},{10,42},{8,40},{6,38},{4,36},
+        {2,30},{2,26},{2,22},{2,18},{4,12},{6,10},{8,8},{10,6},{12,4}
+    });
 }
 
 bool Reactor::select_rod(int x, int y) {
-    auto r = get_rod(x, y);
-    if (r && (r->type == RodType::Manual || r->type == RodType::Short)) {
-        selected_rod = r;
-        target_rod_depth = r->pos_z;
+    if (scrammed) return true;
+    if (x < 0 || x >= reactor_width || y < 0 || y>= reactor_width) return false;
+    unselect_all();
+    auto& r = rods[x][y];
+    if (r.type == RodType::Manual || r.type == RodType::Short) {
+        r.target_z = r.pos_z;
+        r.selected = true;
         return true;
     }
     return false;
 }
-Reactor::Rod *Reactor::get_selected_rod() {
-    return selected_rod;
+
+void Reactor::select_all() {
+    if (scrammed) return;
+    unselect_all();
+    for (int i=0;i<reactor_width;i++) {
+        for (int j=0;j<reactor_width;j++) {
+            if (rods[i][j].type == RodType::Manual || rods[i][j].type == RodType::Short) rods[i][j].selected = true;
+        }
+    }
+}
+
+void Reactor::select_group(int g) {
+    if (scrammed) return;
+    if (g < 1 || g> groups.size()) return;
+    unselect_all();
+    for (auto r : groups[g-1]) {
+        rods[r.first+3][r.second+3].selected = true;
+    }
+}
+
+void Reactor::unselect_all() {
+    for (int i=0;i<reactor_width;i++) {
+        for (int j=0;j<reactor_width;j++) {
+            rods[i][j].selected = false;
+            if (rods[i][j].type != RodType::Automatic) rods[i][j].target_z = rods[i][j].pos_z;
+        }
+    }
 }
 
 void Reactor::move_rod(float dp) {
-    if (selected_rod) {
-        target_rod_depth = max(selected_rod->min_pos_z,min(selected_rod->pos_z+(selected_rod->direction?1:-1)*dp, selected_rod->max_pos_z));
+    for (int i=0;i<reactor_width;i++) {
+        for (int j=0;j<reactor_width;j++) {
+            auto &r = rods[i][j];
+            if (r.selected) r.target_z = max(r.min_pos_z,min(r.pos_z+(r.direction?1:-1)*dp, r.max_pos_z));
+        }
     }
 }
 
 void Reactor::step(float dt) {
+    // Scram movement
     if (scrammed) {
-        target_rod_depth = 100;
-        for (auto& r : rods) {
-            r.pos_z = max(r.min_pos_z, min(r.pos_z + (r.direction?1:-1)*dt*rod_scram_speed, r.max_pos_z));
+        unselect_all();
+        for (int i=0;i<reactor_width;i++) {
+            for (int j=0;j<reactor_width;j++) {
+                auto &r = rods[i][j];
+                if (r.type == RodType::Manual || r.type == RodType::Automatic) {
+                    r.target_z = r.max_pos_z;
+                    r.pos_z = max(r.min_pos_z, min(r.pos_z + dt*rod_scram_speed, r.max_pos_z));
+                } else {
+                    // Stop all else movements
+                    r.target_z = r.pos_z;
+                }
+            }
         }
     }
-    if (selected_rod) {
-        if ((selected_rod->pos_z > target_rod_depth)) 
-            selected_rod->pos_z = max(target_rod_depth, selected_rod->pos_z - rod_insert_speed*dt);
-        else 
-            selected_rod->pos_z = min(target_rod_depth, selected_rod->pos_z + rod_insert_speed*dt);
+    // Rod movement
+    for (int i=0;i<reactor_width;i++) {
+        for (int j=0;j<reactor_width;j++) {
+            auto &r = rods[i][j];
+            if (r.pos_z > r.target_z)
+                r.pos_z = max(r.target_z, r.pos_z - rod_insert_speed*dt);
+            else 
+                r.pos_z = min(r.target_z, r.pos_z + rod_insert_speed*dt);
+        }
     }
+    // Neutron flux computation
+
+    // double buffered neutron flux for diffusion
+    float db_neutron_flux[reactor_width][reactor_width][axial_sections];
+    auto buf_0 = neutron_flux;
+    auto buf_1 = db_neutron_flux;
+
+    for (int l = 0; l < 9; l++) {
+        // sources and sinks
+        for (int i = 0; i < reactor_width; ++i) {
+            for (int j = 0; j < reactor_width; ++j) {
+                auto& r = rods[i][j];
+                for (int k=0;k<axial_sections;k++) {
+                    auto &n = buf_0[i][j][k];
+                    float bound_min_z = k*graphite_width;
+                    if (r.type == RodType::Source) {
+                        n+=source_strength;
+                    } else if (r.type == RodType::Manual || r.type == RodType::Automatic || r.type == RodType::Short) {
+                        float abs_length = (r.type == RodType::Short)?short_absorber_length:absorber_length;
+                        float boron_bound_min = max(0.f,min(r.pos_z-bound_min_z,graphite_width));
+                        float boron_bound_max = max(0.f,min(r.pos_z+abs_length-bound_min_z,graphite_width));
+
+                        float boron_content = (boron_bound_max-boron_bound_min)/graphite_width;
+
+                        n*=(1-boron_absorption*boron_content-water_absorption*(1-boron_content));
+                    } else if (r.type == RodType::Fuel) {
+                        n*=1.01;
+                    }
+                    n*=(1-graphite_absorption);
+                }
+            }
+        }
+        // diffuse flux
+        for (int i = 0; i < reactor_width; ++i) {
+            for (int j = 0; j < reactor_width; ++j) {
+                for (int k=0;k<axial_sections;k++) {
+                    auto &n = buf_0[i][j][k];
+                    float n1 = k>0?buf_0[i][j][k-1]:0;
+                    float n2 = i>0?buf_0[i-1][j][k]:0;
+                    float n3 = j>0?buf_0[i][j-1][k]:0;
+                    float n4 = (k<axial_sections-1)?buf_0[i][j][k+1]:0;
+                    float n5 = (i<reactor_width -1)?buf_0[i+1][j][k]:0;
+                    float n6 = (j<reactor_width -1)?buf_0[i][j+1][k]:0;
+                    buf_1[i][j][k] = (2*n+n1+n2+n3+n4+n5+n6)*0.125;
+                }
+            }
+        }
+        // swap buffers
+        swap(buf_0, buf_1);
+    }
+
+    // Neutron total
+    float previous_flux = total_neutron_flux;
+    total_neutron_flux = 0;
+    for (int i = 0; i < reactor_width; ++i) {
+        for (int j = 0; j < reactor_width; ++j) {
+            for (int k=0;k<axial_sections;k++) {
+                total_neutron_flux += neutron_flux[i][j][k];
+            }
+        }
+    }
+
+    // multiplication per dt
+    float change = (total_neutron_flux/previous_flux);
+    // multiplication per second
+    float change_s = pow(change, 1/dt);
+    period = 1.0/log(change_s);
+}
+
+float Reactor::get_neutron_flux() {
+    return total_neutron_flux;
+}
+
+float Reactor::get_period() {
+    return period;
 }
 
 void Reactor::scram() {

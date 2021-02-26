@@ -12,6 +12,7 @@ public:
     };
 
     enum class RodType {
+        None,
         Manual,
         Short,
         Automatic,
@@ -20,9 +21,8 @@ public:
     };
 
     struct Rod {
-        Rod(int x, int y, RodType type): 
-            pos_x(x), pos_y(y) {
-            this->type = type;
+        Rod() = default;
+        Rod(RodType type): type(type) {
             if (type == RodType::Manual || type == RodType::Source || type == RodType::Automatic) {
                 min_pos_z = -absorber_length;
                 max_pos_z = 0;
@@ -37,16 +37,18 @@ public:
                 direction = true;
             }
             pos_z = direction?max_pos_z:min_pos_z;
+            target_z = pos_z;
         }
-        int pos_x;
-        int pos_y;
-        float pos_z;
-        float min_pos_z;
-        float max_pos_z;
-        bool direction; // 0 for below, 1 for above
-        RodType type;
+        float pos_z = 0;
+        float min_pos_z = 0;
+        float max_pos_z = 0;
+        float target_z = 0;
+        bool direction = true; // 0 for below, 1 for above
+        RodType type = RodType::None;
+        bool selected = false;
     };
 
+    constexpr const static int reactor_width = 56;
 
 private:
     constexpr const static float reactor_height = 8;
@@ -58,39 +60,41 @@ private:
     constexpr const static float short_absorber_length = 3.05;
     constexpr const static float tip_gap = 1.25;
     constexpr const static float tip_length = 4.5;
-    constexpr const static float rod_insert_speed = 0.1;
+    constexpr const static float rod_insert_speed = 0.4;
     constexpr const static float rod_scram_speed = 0.4;
     constexpr const static float fuel_active_length = 6.862;
+    constexpr const static float source_strength = 1E-3;
+    constexpr const static float graphite_absorption = 1E-4;
+    constexpr const static float boron_absorption = 0.8;
+    constexpr const static float water_absorption = 2E-2;
 
-    constexpr const static int reactor_width = 56;
     constexpr const static int axial_sections = reactor_height/graphite_width;
 
-    int indicated_pos(int i);
+    bool scrammed = false;
+    float neutron_flux[reactor_width][reactor_width][axial_sections];
+    float total_neutron_flux = 0;
+    float period = 0;
 
-    Rod* get_rod(int x, int y) {
-        for (unsigned i=0;i<rods.size();i++) {
-            if (rods[i].pos_x == x && rods[i].pos_y == y) return &rods[i];
-        }
-        return nullptr;
-    }
+    std::vector<std::vector<std::pair<int,int>>> groups;
+
+    void unselect_all();
 
 public:
     void step(float dt);
 
     bool select_rod(int x, int y);
-    Rod *get_selected_rod();
+    void select_all();
+    void select_group(int g);
     void move_rod(float dp);
 
     void scram();
     void scram_reset();
 
-    Rod *selected_rod = nullptr;
-    float target_rod_depth = 0;
-    bool scrammed = false;
+    float get_neutron_flux();
+    float get_period();
     
     ColumnType columns[reactor_width][reactor_width];
-    double neutron_flux[reactor_width][reactor_width][axial_sections];
-    std::vector<Rod> rods;
+    Rod rods[reactor_width][reactor_width];
 
     Reactor();
 };

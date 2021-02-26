@@ -58,16 +58,30 @@ bool sendCommand(Reactor &r, string command) {
 
     string name = com[0];
 
-    if (name == "select" && com.size() == 3) {
-        stringstream ss1(com[1]);
-        int x;
-        ss1 >> x;
-        if (!ss1) return false;
-        stringstream ss2(com[2]);
-        int y;
-        ss2 >> y;
-        if (!ss2) return false;
-        return r.select_rod(x+3,y+3);
+    if (name == "select") {
+        if (com.size() == 2 && com[1] == "all") {
+            r.select_all();
+            return true;
+        }
+        if (com.size() == 3) {
+            if (com[1] == "group") {
+                stringstream ss(com[2]);
+                int g;
+                ss >> g;
+                if (!ss) return false;
+                r.select_group(g);
+                return true;
+            }
+            stringstream ss1(com[1]);
+            int x;
+            ss1 >> x;
+            if (!ss1) return false;
+            stringstream ss2(com[2]);
+            int y;
+            ss2 >> y;
+            if (!ss2) return false;
+            return r.select_rod(x+3,y+3);
+        }
     }
     bool pull = name=="pull";
     bool insert = name=="insert";
@@ -171,18 +185,29 @@ int main() {
                 {Reactor::RodType::Source, 5}
             };
 
-            for (auto r : reactor.rods) {
-                if (r.type != Reactor::RodType::Fuel) {
-                    int ii = (r.pos_z-r.min_pos_z)*100.0/(r.max_pos_z-r.min_pos_z);
-                    if (!r.direction) ii = 100-ii;
-                    string txt = (ii==100)?"**":string({(char)(ii/10+'0'),(char)(ii%10+'0')});
-                    wattrset(win, COLOR_PAIR(colors[r.type]));
-                    auto sr = reactor.get_selected_rod();
-                    if (sr && r.pos_y == sr->pos_y && r.pos_x == sr->pos_x && (clock&0x10)) wattron(win, A_STANDOUT);
-                    mvwprintw(win, 2+r.pos_y/2, r.pos_x, txt.c_str());
-                    wattroff(win, A_STANDOUT);
+            for (int i=4;i<Reactor::reactor_width-4;i++) {
+                for (int j=4;j<Reactor::reactor_width-4;j++) {
+                    auto &r = reactor.rods[i][j];
+                    if (r.type != Reactor::RodType::Fuel && r.type != Reactor::RodType::None) {
+                        int ii = (r.pos_z-r.min_pos_z)*100.0/(r.max_pos_z-r.min_pos_z);
+                        if (!r.direction) ii = 100-ii;
+                        string txt = (ii==100)?"**":string({(char)(ii/10+'0'),(char)(ii%10+'0')});
+                        wattrset(win, COLOR_PAIR(colors[r.type]));
+                        if (r.selected && (clock&0x10)) wattron(win, A_STANDOUT);
+                        mvwprintw(win, 2+j/2, i, txt.c_str());
+                        wattroff(win, A_STANDOUT);
+                    }
                 }
             }
+        });
+
+        window(56,10,0,46, "Reactivity monitoring", [&](WINDOW *win) {
+            mvwprintw(win, 2, 2, "Neutron flux : %f", reactor.get_neutron_flux());
+            float period = reactor.get_period();
+            stringstream ss;
+            if (abs(period)>1000) ss << "stable";
+            else ss << (int)period << "s";
+            mvwprintw(win, 4, 2, "Reactor period : %s", ss.str().c_str());
         });
 
         // warnings
