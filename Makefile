@@ -6,7 +6,7 @@ SRCDIR = src
 
 DEPFLAGS=-MT $@ -MMD -MP -MF $(DEPSDIR)/$*.d
 FLAGS=-g -std=c++17 -Wall -pedantic
-LIBS=-lncurses
+LIBS=-lncurses -ltinfo
 
 SRC = main reactor
 OBJPATH = $(patsubst %, $(OBJDIR)/%.o, $(SRC))
