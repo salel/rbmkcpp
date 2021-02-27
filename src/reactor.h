@@ -63,10 +63,16 @@ private:
     constexpr const static float rod_insert_speed = 0.4;
     constexpr const static float rod_scram_speed = 0.4;
     constexpr const static float fuel_active_length = 6.862;
-    constexpr const static float source_strength = 1E-3;
+    constexpr const static float source_strength = 1E-10;
     constexpr const static float graphite_absorption = 1E-4;
     constexpr const static float boron_absorption = 0.8;
     constexpr const static float water_absorption = 2E-2;
+    constexpr const static float enrichment = 2E-2;
+    constexpr const static float u235_fission = 583;
+    constexpr const static float u235_capture = 99;
+    constexpr const static float u238_capture = 2;
+    constexpr const static float u235_neutrons = 2.43;
+
 
     constexpr const static int axial_sections = reactor_height/graphite_width;
 

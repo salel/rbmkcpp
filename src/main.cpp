@@ -202,7 +202,7 @@ int main() {
         });
 
         window(56,10,0,46, "Reactivity monitoring", [&](WINDOW *win) {
-            mvwprintw(win, 2, 2, "Neutron flux : %f", reactor.get_neutron_flux());
+            mvwprintw(win, 2, 2, "Neutron flux : %g", reactor.get_neutron_flux());
             float period = reactor.get_period();
             stringstream ss;
             if (abs(period)>1000) ss << "stable";

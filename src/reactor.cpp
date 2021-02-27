@@ -148,7 +148,7 @@ void Reactor::select_all() {
 
 void Reactor::select_group(int g) {
     if (scrammed) return;
-    if (g < 1 || g> groups.size()) return;
+    if (g < 1 || g> (int)groups.size()) return;
     unselect_all();
     for (auto r : groups[g-1]) {
         rods[r.first+3][r.second+3].selected = true;
@@ -206,8 +206,8 @@ void Reactor::step(float dt) {
     float db_neutron_flux[reactor_width][reactor_width][axial_sections];
     auto buf_0 = neutron_flux;
     auto buf_1 = db_neutron_flux;
-
     for (int l = 0; l < 9; l++) {
+
         // sources and sinks
         for (int i = 0; i < reactor_width; ++i) {
             for (int j = 0; j < reactor_width; ++j) {
@@ -226,12 +226,16 @@ void Reactor::step(float dt) {
 
                         n*=(1-boron_absorption*boron_content-water_absorption*(1-boron_content));
                     } else if (r.type == RodType::Fuel) {
-                        n*=1.01;
+                        float fuel_content = 0.001;
+                        float u235_content = fuel_content*enrichment;
+                        float u238_content = fuel_content*(1-enrichment);
+                        n *= (1+u235_content*(u235_fission*(u235_neutrons-1) - u235_capture) - u238_content*u238_capture);
                     }
                     n*=(1-graphite_absorption);
                 }
             }
         }
+
         // diffuse flux
         for (int i = 0; i < reactor_width; ++i) {
             for (int j = 0; j < reactor_width; ++j) {
