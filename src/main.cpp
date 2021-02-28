@@ -21,7 +21,26 @@ using namespace std;
 
 const static float dt = 0.025;
 
+const int width = 206;
+const int height = 65;
+
+int h,w;
+
 void window(int sx, int sy, int x, int y, string title, function<void(WINDOW*)> f) {
+
+    if (w >= width && h >= height) {
+        int margin_w = (w-width)/2;
+        int margin_h = (h-height)/2;
+
+        if (sy <= 0) sy += height;
+        if (sx <= 0) sx += width;
+
+        if (y>=0) y += margin_h;
+        else y += height+margin_h-sy;
+        if (x>=0) x += margin_w;
+        else x += width+margin_w-sx;
+    }
+
     WINDOW* win = newwin(sy, sx, y, x);
     box(win, 0, 0);
     mvwprintw(win, 0, (sx-title.length())/2, title.c_str());
@@ -159,68 +178,73 @@ int main() {
         }
 
         // display
-        int h,w;
         getmaxyx(stdscr, h, w);
         refresh();
 
-        // overview
-        window(56,16,0,0,"Overview", [&](WINDOW *win) {
-            
-        });
+        if (w < width || h < height) {
+            window(40,2,0,0,"Please enlarge your terminal", [&](WINDOW *win) {});
 
-        window(56,30,0,16,"Rod positions", [&](WINDOW *win) {
-            for (int i=0;i<23;i++) {
-                int num = i*2+2;
-                string format = {(char)(num/10+'0'), (char)(num%10+'0')};
-                mvwprintw(win, i+4, 2, format.c_str());
-                mvwprintw(win, i+4, 52, format.c_str());
-                mvwprintw(win, 2, i*2+5, format.c_str());
-                mvwprintw(win, 28, i*2+5, format.c_str());
-            }
+        } else {
 
-            map<Reactor::RodType, int> colors = {
-                {Reactor::RodType::Manual, 2},
-                {Reactor::RodType::Short, 3},
-                {Reactor::RodType::Automatic, 4},
-                {Reactor::RodType::Source, 5}
-            };
+            // overview
+            window(56,16,0,0,"Overview", [&](WINDOW *win) {
+                
+            });
 
-            for (int i=4;i<Reactor::reactor_width-4;i++) {
-                for (int j=4;j<Reactor::reactor_width-4;j++) {
-                    auto &r = reactor.rods[i][j];
-                    if (r.type != Reactor::RodType::Fuel && r.type != Reactor::RodType::None) {
-                        int ii = (r.pos_z-r.min_pos_z)*100.0/(r.max_pos_z-r.min_pos_z);
-                        if (!r.direction) ii = 100-ii;
-                        string txt = (ii==100)?"**":string({(char)(ii/10+'0'),(char)(ii%10+'0')});
-                        wattrset(win, COLOR_PAIR(colors[r.type]));
-                        if (r.selected && (clock&0x10)) wattron(win, A_STANDOUT);
-                        mvwprintw(win, 2+j/2, i, txt.c_str());
-                        wattroff(win, A_STANDOUT);
+            window(56,30,0,16,"Rod positions", [&](WINDOW *win) {
+                for (int i=0;i<23;i++) {
+                    int num = i*2+2;
+                    string format = {(char)(num/10+'0'), (char)(num%10+'0')};
+                    mvwprintw(win, i+4, 2, format.c_str());
+                    mvwprintw(win, i+4, 52, format.c_str());
+                    mvwprintw(win, 2, i*2+5, format.c_str());
+                    mvwprintw(win, 28, i*2+5, format.c_str());
+                }
+
+                map<Reactor::RodType, int> colors = {
+                    {Reactor::RodType::Manual, 2},
+                    {Reactor::RodType::Short, 3},
+                    {Reactor::RodType::Automatic, 4},
+                    {Reactor::RodType::Source, 5}
+                };
+
+                for (int i=4;i<Reactor::reactor_width-4;i++) {
+                    for (int j=4;j<Reactor::reactor_width-4;j++) {
+                        auto &r = reactor.rods[i][j];
+                        if (r.type != Reactor::RodType::Fuel && r.type != Reactor::RodType::None) {
+                            int ii = (r.pos_z-r.min_pos_z)*100.0/(r.max_pos_z-r.min_pos_z);
+                            if (!r.direction) ii = 100-ii;
+                            string txt = (ii==100)?"**":string({(char)(ii/10+'0'),(char)(ii%10+'0')});
+                            wattrset(win, COLOR_PAIR(colors[r.type]));
+                            if (r.selected && (clock&0x10)) wattron(win, A_STANDOUT);
+                            mvwprintw(win, 2+j/2, i, txt.c_str());
+                            wattroff(win, A_STANDOUT);
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        window(56,10,0,46, "Reactivity monitoring", [&](WINDOW *win) {
-            mvwprintw(win, 2, 2, "Neutron flux : %g", reactor.get_neutron_flux());
-            float period = reactor.get_period();
-            stringstream ss;
-            if (abs(period)>1000) ss << "stable";
-            else ss << (int)period << "s";
-            mvwprintw(win, 4, 2, "Reactor period : %s", ss.str().c_str());
-        });
+            window(56,10,0,46, "Reactivity monitoring", [&](WINDOW *win) {
+                mvwprintw(win, 2, 2, "Neutron flux : %g", reactor.get_neutron_flux());
+                float period = reactor.get_period();
+                stringstream ss;
+                if (abs(period)>1000) ss << "stable";
+                else ss << (int)period << "s";
+                mvwprintw(win, 4, 2, "Reactor period : %s", ss.str().c_str());
+            });
 
-        // warnings
-        window(40,60,w-40,0, "Alarms", [&](WINDOW *win) {
+            // warnings
+            window(40,-6,-1,0, "Alarms", [&](WINDOW *win) {
 
-        });
+            });
 
-        // command
-        window(40,5,w-40,h-5, "Command", [&](WINDOW *win) {
-            if (command_error) wattrset(win, COLOR_PAIR(1));
-            mvwprintw(win, 2, 4, command.c_str());
-            wattrset(win, A_NORMAL);
-        });
+            // command
+            window(40,5,-1,-1, "Command", [&](WINDOW *win) {
+                if (command_error) wattrset(win, COLOR_PAIR(1));
+                mvwprintw(win, 2, 4, command.c_str());
+                wattrset(win, A_NORMAL);
+            });
+        }
 
         reactor.step(dt);
         this_thread::sleep_for(chrono::milliseconds((int)(dt*1000)));
