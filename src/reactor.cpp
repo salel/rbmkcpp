@@ -114,14 +114,95 @@ Reactor::Reactor() {
         }
     }
 
-    // Generate groups
+    // Generate groups (outwards to inwards)
     groups.push_back({
         {18,2},{22,2},{26,2},{30,2},{36,4},{38,6},{40,8},{42,10},{44,12},
         {46,18},{46,22},{46,26},{46,30},{46,34},{44,36},{42,38},{40,40},{38,42},{36,44},
         {34,46},{30,46},{26,46},{22,46},{18,46},{12,44},{10,42},{8,40},{6,38},{4,36},
-        {2,30},{2,26},{2,22},{2,18},{4,12},{6,10},{8,8},{10,6},{12,4}
+        {2,30},{2,26},{2,22},{2,18},{4,12},{6,10},{8,8},{10,6},{12,4},
     });
+    groups.push_back({
+        {16,4},{20,4},{24,4},{28,4},{32,4},
+        {34,6},{36,8},{38,10},{40,12},{42,14},{44,16},
+        {44,20},{44,24},{44,28},{44,32},
+        {42,34},{40,36},{38,38},{36,40},{34,42},{32,44},
+        {28,44},{24,44},{20,44},{16,44},
+        {14,42},{12,40},{10,38},{8,36},{6,34},{4,32},
+        {4,28},{4,24},{4,20},{4,16},
+        {6,14},{8,12},{10,10},{12,8},{14,6}
+    });
+
+    groups.push_back({
+        {18,6},{22,6},{26,6},{30,6},
+        {34,10},{36,12},{38,14},
+        {42,18},{42,22},{42,26},{42,30},
+        {38,34},{36,36},{34,38},
+        {30,42},{26,42},{22,42},{18,42},
+        {14,38},{12,36},{10,34},
+        {6,30},{6,26},{6,22},{6,18},
+        {10,14},{12,12},{14,10},
+    });
+
+    groups.push_back({
+        {20,8},{24,8},{28,8},
+        {30,10},{32,12},{34,14},{36,16},{38,18},
+        {40,20},{40,24},{40,28},
+        {38,30},{36,32},{34,34},{32,36},{30,38},
+        {28,40},{24,40},{20,40},
+        {18,38},{16,36},{14,34},{12,32},{10,30},
+        {8,28},{8,24},{8,20},
+        {10,18},{12,16},{14,14},{16,12},{18,10},
+        {22,10},{26,10},{38,22},{38,26},
+        {22,38},{26,38},{10,22},{10,26}
+    });
+
+    groups.push_back({
+        {20,12},{22,14},{26,14},{28,12},
+        {30,14},{34,18},
+        {36,20},{34,22},{34,26},{36,28},
+        {34,30},{30,34},
+        {28,36},{26,34},{22,34},{20,36},
+        {18,34},{14,30},
+        {12,28},{14,26},{14,22},{12,20},
+        {14,18},{18,14}
+    });
+
+    groups.push_back({
+        {16,20},{18,18},{20,16},
+        {28,32},{30,30},{32,28},
+        {28,16},{30,18},{32,20},
+        {16,28},{18,30},{20,32},
+        {18,22},{30,22},{18,26},{30,26},
+        {22,18},{22,30},{26,18},{26,30},
+    });
+
+    groups.push_back({
+        {20,20},{22,22},{24,24},{26,26},{28,28},
+        {28,20},{26,22},{22,26},{20,28}
+    });
+
+    // source layout
+
+    center_sources = {
+        {27,19},
+        {27,35},
+        {19,27},
+        {35,27}
+    };
+
+
+    outer_sources = {
+        {19,11},
+        {35,11},
+        {19,43},
+        {35,43},
+        {11,19},
+        {11,35},
+        {43,16},
+        {43,35}
+    };
 }
+
 
 bool Reactor::select_rod(int x, int y) {
     if (scrammed) return true;
@@ -258,14 +339,31 @@ void Reactor::step(float dt) {
     // Neutron total
     float previous_flux = total_neutron_flux;
     total_neutron_flux = 0;
+
     for (int i = 0; i < reactor_width; ++i) {
         for (int j = 0; j < reactor_width; ++j) {
-            for (int k=0;k<axial_sections;k++) {
-                total_neutron_flux += neutron_flux[i][j][k];
+            if (columns[i][j] == ColumnType::FC_CPS) {
+                for (int k=0;k<axial_sections;k++) {
+                    auto &n = neutron_flux[i][j][k];
+                    total_neutron_flux += n;
+                }
             }
         }
     }
 
+    // get peaks
+    float center_flux = 0;
+    float outer_flux = 0;
+
+    for (int k=0;k<axial_sections;k++) {
+        for (auto p : center_sources) {
+            center_flux += neutron_flux[p.first][p.second][k];
+        }
+        for (auto p : outer_sources) {
+            outer_flux += neutron_flux[p.first][p.second][k];
+        }
+    }
+    radial_peak = (outer_sources.size()*center_flux)/(center_sources.size()*outer_flux);
     // multiplication per dt
     float change = (total_neutron_flux/previous_flux);
     // multiplication per second
@@ -279,6 +377,10 @@ float Reactor::get_neutron_flux() {
 
 float Reactor::get_period() {
     return period;
+}
+
+float Reactor::get_radial_peak() {
+    return radial_peak;
 }
 
 void Reactor::scram() {

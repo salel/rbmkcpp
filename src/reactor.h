@@ -79,6 +79,8 @@ private:
     bool scrammed = false;
     float neutron_flux[reactor_width][reactor_width][axial_sections];
     float total_neutron_flux = 0;
+    float axial_peak = 0;
+    float radial_peak = 0;
     float period = 0;
 
     std::vector<std::vector<std::pair<int,int>>> groups;
@@ -98,9 +100,13 @@ public:
 
     float get_neutron_flux();
     float get_period();
+    float get_radial_peak();
     
     ColumnType columns[reactor_width][reactor_width];
     Rod rods[reactor_width][reactor_width];
+
+    std::vector<std::pair<int,int>> center_sources;
+    std::vector<std::pair<int,int>> outer_sources;
 
     Reactor();
 };

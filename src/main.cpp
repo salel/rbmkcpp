@@ -77,6 +77,11 @@ bool sendCommand(Reactor &r, string command) {
 
     string name = com[0];
 
+    if (name == "stop" && com.size() == 1) {
+        r.move_rod(0);
+        return true;
+    }
+
     if (name == "select") {
         if (com.size() == 2 && com[1] == "all") {
             r.select_all();
@@ -179,7 +184,6 @@ int main() {
 
         // display
         getmaxyx(stdscr, h, w);
-        refresh();
 
         if (w < width || h < height) {
             window(40,2,0,0,"Please enlarge your terminal", [&](WINDOW *win) {});
@@ -230,7 +234,8 @@ int main() {
                 stringstream ss;
                 if (abs(period)>1000) ss << "stable";
                 else ss << (int)period << "s";
-                mvwprintw(win, 4, 2, "Reactor period : %s", ss.str().c_str());
+                mvwprintw(win, 3, 2, "Reactor period : %s", ss.str().c_str());
+                mvwprintw(win, 4, 2, "Radial peak : %g", reactor.get_radial_peak());
             });
 
             // warnings
