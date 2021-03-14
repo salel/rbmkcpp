@@ -5,7 +5,7 @@ OBJDIR = .obj
 SRCDIR = src
 
 DEPFLAGS=-MT $@ -MMD -MP -MF $(DEPSDIR)/$*.d
-FLAGS=-g -std=c++17 -Wall -pedantic
+FLAGS=-O2 -std=c++17 -Wall -pedantic
 LIBS=-lncurses -ltinfo
 
 SRC = main reactor

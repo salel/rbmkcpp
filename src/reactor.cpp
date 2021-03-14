@@ -15,6 +15,38 @@
 
 using namespace std;
 
+const float graphite_width = 0.25;
+const float reactor_height = Reactor::axial_sections*graphite_width;
+const float graphite_holes_diameter = 0.114;
+const float pressure_tube_inner_diameter = 0.08;
+const float rod_diameter = 0.06;
+const float pressure_tube_walls_thickness = 0.004;
+const float absorber_length = 5.12;
+const float short_absorber_length = 3.05;
+const float tip_gap = 1.25;
+const float tip_length = 4.5;
+const float rod_insert_speed = 0.4;
+const float rod_scram_speed = 0.4;
+const float source_strength = 1E-10;
+const float enrichment = 2E-2;
+const float u235_neutrons = 2.43;
+
+// volume occupied by material in section
+const float rr_graphite_volume = graphite_width*graphite_width*graphite_width;
+const float rrc_coolant_volume = graphite_width*M_PI*pressure_tube_inner_diameter*pressure_tube_inner_diameter/4;
+const float graphite_volume = (graphite_width*graphite_width-M_PI*graphite_holes_diameter*graphite_holes_diameter/4)*graphite_width;
+const float b4c_volume = graphite_width*M_PI*rod_diameter*rod_diameter/4;
+const float u_volume = 3.734E-4;
+
+const float coolant_volume = graphite_width*M_PI*(pressure_tube_inner_diameter*pressure_tube_inner_diameter-rod_diameter*rod_diameter)/4;
+
+// macroscopic cross sections (m-1)
+const float graphite_abs_mcs = 2.26E-2;
+const float b4c_abs_mcs = 8.43E3;
+const float u235_fission_mcs = 1.425E3;
+const float u235_abs_mcs = 2.421E2;
+const float u238_abs_mcs = 4.89;
+const float water_abs_mcs = 1.338;
 
 Reactor::Reactor() {
     // layouts
@@ -198,7 +230,7 @@ Reactor::Reactor() {
         {35,43},
         {11,19},
         {11,35},
-        {43,16},
+        {43,19},
         {43,35}
     };
 }
@@ -233,6 +265,17 @@ void Reactor::select_group(int g) {
     unselect_all();
     for (auto r : groups[g-1]) {
         rods[r.first+3][r.second+3].selected = true;
+    }
+}
+
+void Reactor::select_sources() {
+    if (scrammed) return;
+    unselect_all();
+    for (auto r : center_sources) {
+        rods[r.first][r.second].selected = true;
+    }
+    for (auto r : outer_sources) {
+        rods[r.first][r.second].selected = true;
     }
 }
 
@@ -282,93 +325,118 @@ void Reactor::step(float dt) {
         }
     }
     // Neutron flux computation
+    const float prompt_gen_time = 0.002;
 
-    // double buffered neutron flux for diffusion
+    // double buffer for diffusion
     float db_neutron_flux[reactor_width][reactor_width][axial_sections];
-    auto buf_0 = neutron_flux;
-    auto buf_1 = db_neutron_flux;
-    for (int l = 0; l < 9; l++) {
 
+    for (int it = 0;it<(dt/prompt_gen_time);it++) {
         // sources and sinks
         for (int i = 0; i < reactor_width; ++i) {
             for (int j = 0; j < reactor_width; ++j) {
                 auto& r = rods[i][j];
                 for (int k=0;k<axial_sections;k++) {
-                    auto &n = buf_0[i][j][k];
-                    float bound_min_z = k*graphite_width;
-                    if (r.type == RodType::Source) {
-                        n+=source_strength;
-                    } else if (r.type == RodType::Manual || r.type == RodType::Automatic || r.type == RodType::Short) {
-                        float abs_length = (r.type == RodType::Short)?short_absorber_length:absorber_length;
-                        float boron_bound_min = max(0.f,min(r.pos_z-bound_min_z,graphite_width));
-                        float boron_bound_max = max(0.f,min(r.pos_z+abs_length-bound_min_z,graphite_width));
+                    const auto n = neutron_flux[i][j][k];
+                    float nn = 0;
+                    float constant_source = 0;
+                    if (columns[i][j] == ColumnType::FC_CPS) {
+                        float bound_min_z = k*graphite_width;
+                        if (r.type == RodType::Source) {
+                            const float source_length = 7;
+                            const float source_bound_min = max(0.f, min(r.pos_z-bound_min_z, graphite_width));
+                            const float source_bound_max = max(0.f, min(r.pos_z-bound_min_z+source_length, graphite_width));
+                            const float source_content = (source_bound_max-source_bound_min)/graphite_width;
+                            constant_source = source_content*source_strength;
+                        } else if (r.type == RodType::Manual || r.type == RodType::Automatic || r.type == RodType::Short) {
+                            const float abs_length = (r.type == RodType::Short)?short_absorber_length:absorber_length;
+                            const float boron_bound_min = max(0.f,min(r.pos_z-bound_min_z,graphite_width));
+                            const float boron_bound_max = max(0.f,min(r.pos_z+abs_length-bound_min_z,graphite_width));
 
-                        float boron_content = (boron_bound_max-boron_bound_min)/graphite_width;
+                            const float boron_content = (boron_bound_max-boron_bound_min)/graphite_width;
 
-                        n*=(1-boron_absorption*boron_content-water_absorption*(1-boron_content));
-                    } else if (r.type == RodType::Fuel) {
-                        float fuel_content = 0.001;
-                        float u235_content = fuel_content*enrichment;
-                        float u238_content = fuel_content*(1-enrichment);
-                        n *= (1+u235_content*(u235_fission*(u235_neutrons-1) - u235_capture) - u238_content*u238_capture);
+                            nn -= boron_content*b4c_volume*b4c_abs_mcs;
+                            nn -= (1-boron_content)*b4c_volume*water_abs_mcs;
+                        } else if (r.type == RodType::Fuel) {
+                            if (k >= 2 && k < reactor_width-2) {
+                                const float u235_fission = enrichment*u235_fission_mcs;
+                                const float u235_capture = enrichment*u235_abs_mcs;
+                                const float u238_capture = (1-enrichment)*u238_abs_mcs;
+
+                                nn += u_volume*(u235_fission*(u235_neutrons-1)-u235_capture-u238_capture);
+                            }
+                        }
+                        nn -= coolant_volume*water_abs_mcs;
+                        nn -= graphite_volume*graphite_abs_mcs;
+                    } else if (columns[i][j] == ColumnType::RR) {
+                        nn -= rr_graphite_volume*graphite_abs_mcs;
+                    } else if (columns[i][j] == ColumnType::RRC) {
+                        nn -= graphite_volume*graphite_abs_mcs;
+                        nn -= rrc_coolant_volume*water_abs_mcs;
                     }
-                    n*=(1-graphite_absorption);
+                    db_neutron_flux[i][j][k] = n*(1+max(nn, -1.f))+constant_source;
                 }
             }
         }
 
         // diffuse flux
+        const float coef = 1.0/9.0;
+        auto &buf_0 = db_neutron_flux;
         for (int i = 0; i < reactor_width; ++i) {
             for (int j = 0; j < reactor_width; ++j) {
                 for (int k=0;k<axial_sections;k++) {
-                    auto &n = buf_0[i][j][k];
+                    float n = buf_0[i][j][k];
                     float n1 = k>0?buf_0[i][j][k-1]:0;
                     float n2 = i>0?buf_0[i-1][j][k]:0;
                     float n3 = j>0?buf_0[i][j-1][k]:0;
                     float n4 = (k<axial_sections-1)?buf_0[i][j][k+1]:0;
                     float n5 = (i<reactor_width -1)?buf_0[i+1][j][k]:0;
                     float n6 = (j<reactor_width -1)?buf_0[i][j+1][k]:0;
-                    buf_1[i][j][k] = (2*n+n1+n2+n3+n4+n5+n6)*0.125;
-                }
-            }
-        }
-        // swap buffers
-        swap(buf_0, buf_1);
-    }
-
-    // Neutron total
-    float previous_flux = total_neutron_flux;
-    total_neutron_flux = 0;
-
-    for (int i = 0; i < reactor_width; ++i) {
-        for (int j = 0; j < reactor_width; ++j) {
-            if (columns[i][j] == ColumnType::FC_CPS) {
-                for (int k=0;k<axial_sections;k++) {
-                    auto &n = neutron_flux[i][j][k];
-                    total_neutron_flux += n;
+                    neutron_flux[i][j][k] = n*coef + (n1+n2+n3+n4+n5+n6)*(1-coef)/6;
                 }
             }
         }
     }
+    // telemetry
 
-    // get peaks
-    float center_flux = 0;
-    float outer_flux = 0;
+    if (telemetry_time >= telemetry_dt) {
+        // Neutron total
+        total_neutron_flux = 0;
 
-    for (int k=0;k<axial_sections;k++) {
-        for (auto p : center_sources) {
-            center_flux += neutron_flux[p.first][p.second][k];
+        for (int i = 0; i < reactor_width; ++i) {
+            for (int j = 0; j < reactor_width; ++j) {
+                if (columns[i][j] == ColumnType::FC_CPS) {
+                    for (int k=0;k<axial_sections;k++) {
+                        auto &n = neutron_flux[i][j][k];
+                        total_neutron_flux += n;
+                    }
+                }
+            }
         }
-        for (auto p : outer_sources) {
-            outer_flux += neutron_flux[p.first][p.second][k];
+        // get peaks
+        float center_flux = 0;
+        float outer_flux = 0;
+
+        for (int k=0;k<axial_sections;k++) {
+            for (auto p : center_sources) {
+                center_flux += neutron_flux[p.first][p.second][k];
+            }
+            for (auto p : outer_sources) {
+                outer_flux += neutron_flux[p.first][p.second][k];
+            }
         }
+        radial_peak = (outer_sources.size()*center_flux)/(center_sources.size()*outer_flux);
+        // multiplication per dt
+        float change = (total_neutron_flux/previous_flux);
+        previous_flux = total_neutron_flux;
+        // multiplication per second
+        float change_s = pow(change, 1/telemetry_time);
+        period = 1.0/log(change_s);
+
+        telemetry_time = 0;
     }
-    radial_peak = (outer_sources.size()*center_flux)/(center_sources.size()*outer_flux);
-    // multiplication per dt
-    float change = (total_neutron_flux/previous_flux);
-    // multiplication per second
-    float change_s = pow(change, 1/dt);
-    period = 1.0/log(change_s);
+
+    telemetry_time += dt;
+
 }
 
 float Reactor::get_neutron_flux() {
@@ -389,4 +457,29 @@ void Reactor::scram() {
 
 void Reactor::scram_reset() {
     scrammed = false;
+}
+
+Reactor::Rod::Rod(RodType type): type(type) {
+    if (type == RodType::Source) {
+        min_pos_z = -7;
+        max_pos_z = 0.5;
+        direction = true;
+        pos_z = min_pos_z;
+    } else if (type == RodType::Manual || type == RodType::Automatic) {
+        min_pos_z = -absorber_length+0.5;
+        max_pos_z = 0.5;
+        direction = true;
+        pos_z = max_pos_z;
+    } else if (type == RodType::Short) {
+        min_pos_z = reactor_height-short_absorber_length-0.5;
+        max_pos_z = reactor_height-0.5;
+        direction = false;
+        pos_z = min_pos_z;
+    } else if (type == RodType::Fuel) {
+        min_pos_z = 0;
+        max_pos_z = 0;
+        direction = true;
+        pos_z = 0;
+    }
+    target_z = pos_z;
 }

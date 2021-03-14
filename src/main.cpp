@@ -83,9 +83,14 @@ bool sendCommand(Reactor &r, string command) {
     }
 
     if (name == "select") {
-        if (com.size() == 2 && com[1] == "all") {
-            r.select_all();
-            return true;
+        if (com.size() == 2) {
+            if (com[1] == "all") {
+                r.select_all();
+                return true;
+            } else if (com[1] == "sources") {
+                r.select_sources();
+                return true;
+            }
         }
         if (com.size() == 3) {
             if (com[1] == "group") {
@@ -162,7 +167,12 @@ int main() {
 
     uint clock = 0;
 
+    auto loop_time = chrono::milliseconds(0);
+
     while (true) {
+        // timer
+        auto start = chrono::steady_clock::now();
+
         // keys
         int ch = getch();
         if (ch == 10 || ch == KEY_ENTER) {
@@ -192,7 +202,10 @@ int main() {
 
             // overview
             window(56,16,0,0,"Overview", [&](WINDOW *win) {
-                
+                stringstream ss;
+                ss << loop_time.count() << "ms";
+
+                mvwprintw(win, 2, 2, ss.str().c_str());
             });
 
             window(56,30,0,16,"Rod positions", [&](WINDOW *win) {
@@ -232,7 +245,7 @@ int main() {
                 mvwprintw(win, 2, 2, "Neutron flux : %g", reactor.get_neutron_flux());
                 float period = reactor.get_period();
                 stringstream ss;
-                if (abs(period)>1000) ss << "stable";
+                if (abs(period)>1000) ss << "***";
                 else ss << (int)period << "s";
                 mvwprintw(win, 3, 2, "Reactor period : %s", ss.str().c_str());
                 mvwprintw(win, 4, 2, "Radial peak : %g", reactor.get_radial_peak());
@@ -252,7 +265,11 @@ int main() {
         }
 
         reactor.step(dt);
-        this_thread::sleep_for(chrono::milliseconds((int)(dt*1000)));
+        auto end = chrono::steady_clock::now();
+
+        loop_time = chrono::duration_cast<chrono::milliseconds>(end-start);
+
+        this_thread::sleep_for(chrono::milliseconds((int)(dt*1000))-loop_time);
         clock++;
     }
 }
